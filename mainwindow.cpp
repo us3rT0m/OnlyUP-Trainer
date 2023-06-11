@@ -44,6 +44,7 @@ void MainWindow::displayPositions()
     QWidget* scrollContent = new QWidget(scrollArea);
     QVBoxLayout* scrollLayout = new QVBoxLayout(scrollContent);
     scrollLayout->setSpacing(0);
+    scrollLayout->setContentsMargins(0, 0, 0, 0);
 
     // Parcours les positions enregistrées dans le PositionManager
     for (const QString& positionName : positionManager.getPositions().keys()) {
@@ -52,6 +53,8 @@ void MainWindow::displayPositions()
 
         // Crée un nouveau layout horizontal pour le widget de position
         QHBoxLayout* positionLayout = new QHBoxLayout(positionWidget);
+        positionLayout->setSpacing(0);
+        positionLayout->setContentsMargins(0, 0, 0, 0);
 
         // Crée un nouveau bouton de suppression pour la position
         QPushButton* deleteButton = new QPushButton("🗑", positionWidget);

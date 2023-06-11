@@ -45,10 +45,16 @@
      </rect>
     </property>
     <property name="text">
-     <string>If you appreciate my work, Buy me à coffe &lt;3 : https://www.buymeacoffee.com/t0mz3r</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Si vous appréciez mon travail, n'hésitez pas à m'offrir un café&lt;span style=&quot; color:#000000;&quot;&gt; ♥&lt;/span&gt; : &lt;a href=&quot;https://www.buymeacoffee.com/t0mz3r&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#bf8a3f;&quot;&gt;https://www.buymeacoffee.com/t0mz3r&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::RichText</enum>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_init">
@@ -62,7 +68,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>18</pointsize>
+      <pointsize>16</pointsize>
      </font>
     </property>
     <property name="text">
@@ -75,7 +81,7 @@
    <widget class="QLabel" name="label_title">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>10</y>
       <width>191</width>
       <height>49</height>
@@ -232,7 +238,7 @@
       <set>Qt::AlignCenter</set>
      </property>
      <property name="placeholderText">
-      <string> Name of this pos</string>
+      <string>Nom de la position</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_positions">
