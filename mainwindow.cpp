@@ -47,9 +47,16 @@ void MainWindow::displayPositions()
     scrollLayout->setContentsMargins(0, 0, 0, 0);
 
     // Parcours les positions enregistrées dans le PositionManager
+    int i = 0;
     for (const QString& positionName : positionManager.getPositions().keys()) {
         // Crée un nouveau widget pour regrouper les éléments de la position
         QWidget* positionWidget = new QWidget(this);
+        if (i++ % 2 == 0) {
+            QPalette pal = QPalette();
+            pal.setColor(QPalette::Window, QColor::fromRgbF(0, 0, 0, 0.1f));
+            positionWidget->setAutoFillBackground(true);
+            positionWidget->setPalette(pal);
+        }
 
         // Crée un nouveau layout horizontal pour le widget de position
         QHBoxLayout* positionLayout = new QHBoxLayout(positionWidget);
@@ -58,20 +65,20 @@ void MainWindow::displayPositions()
 
         // Crée un nouveau bouton de suppression pour la position
         QPushButton* deleteButton = new QPushButton("🗑", positionWidget);
-        deleteButton->setFixedSize(20, 20);
+        deleteButton->setFixedSize(30, 30);
         positionLayout->addWidget(deleteButton);
         deleteButtons.append(deleteButton);
 
         // Crée un nouveau label avec le nom de la position
         QLabel* nameLabel = new QLabel(positionName, positionWidget);
-        nameLabel->setAlignment(Qt::AlignCenter);
-        nameLabel->setFont(QFont("Arial", 10));
+        nameLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        nameLabel->setFont(QFont("Arial", 12));
         positionLayout->addWidget(nameLabel);
         positionLabels.append(nameLabel);
 
         // Crée un nouveau bouton "Interagir" pour la position
-        QPushButton* interactButton = new QPushButton("→", positionWidget);
-        interactButton->setFixedSize(20, 20);
+        QPushButton* interactButton = new QPushButton("➜", positionWidget);
+        interactButton->setFixedSize(30, 30);
         positionLayout->addWidget(interactButton);
 
         // Connecte le signal clicked() du bouton de suppression à une fonction de suppression
