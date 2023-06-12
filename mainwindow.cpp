@@ -11,6 +11,42 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QIcon windowIcon(":/logo.png"); // Chemin de l'image dans le fichier .qrc
+    setWindowIcon(windowIcon);
+
+
+    qApp->setStyleSheet("QMainWindow { background-color: #323232; }"
+                        "QPushButton {"
+                        "background-color: #424242; "
+                        "border-style: solid; "
+                        "border-width: 1px; "
+                        "border-radius: 4px; "
+                        "border-color: #6a6a6a; "
+                        "color: #ffffff; "
+                        "padding: 5px;"
+                        "}"
+                        "QPushButton:hover {"
+                        "background-color: #484848;"
+                        "}"
+                        "QPushButton:pressed {"
+                        "background-color: #484848;"
+                        "}"
+                        "QLabel {"
+                        "color: #ffffff;"
+                        "}"
+                        "QLineEdit {"
+                        "background-color: #424242; "
+                        "color: #ffffff;"
+                        "border-style: solid; "
+                        "border-width: 1px; "
+                        "border-color: #6a6a6a;"
+                        "}"
+                        "QWidget {"
+                        "background-color: #424242;"
+                        "}"
+                        );
+
     instance = this;
     UnhookWindowsHookEx(hHook);
     hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(NULL), 0);
@@ -55,7 +91,7 @@ void MainWindow::displayPositions(const QString& searchText = "")
     QWidget* scrollContent = new QWidget(scrollArea);
     QVBoxLayout* scrollLayout = new QVBoxLayout(scrollContent);
     scrollLayout->setSpacing(0);
-    scrollLayout->setContentsMargins(0, 0, 0, 0);
+    scrollLayout->setContentsMargins(5, 0, 5, 0);
 
     // Parcours les positions enregistrées dans le PositionManager
     int i = 0;
@@ -70,7 +106,10 @@ void MainWindow::displayPositions(const QString& searchText = "")
         if (i++ % 2 == 0) {
             QPalette pal = QPalette();
             pal.setColor(QPalette::Window, QColor::fromRgbF(0, 0, 0, 0.1f));
-            positionWidget->setAutoFillBackground(true);
+            positionWidget->setStyleSheet("QWidget {"
+                                          "background-color: #535353;"
+                                          "}"
+                                          );
             positionWidget->setPalette(pal);
         }
 
@@ -82,6 +121,28 @@ void MainWindow::displayPositions(const QString& searchText = "")
         // Crée un nouveau bouton de suppression pour la position
         QPushButton* deleteButton = new QPushButton("🗑", positionWidget);
         deleteButton->setFixedSize(30, 30);
+        deleteButton->setCursor(Qt::PointingHandCursor);
+
+        if (i % 2 == 0) {
+            QPalette pal = QPalette();
+            pal.setColor(QPalette::Window, QColor::fromRgbF(0, 0, 0, 0.1f));
+            deleteButton->setStyleSheet("QWidget:hover {"
+                                          "background-color: #4A4A4A;"
+                                          "}"
+                                          );
+            deleteButton->setPalette(pal);
+        }
+
+        if (i % 2 == 1) {
+            QPalette pal = QPalette();
+            pal.setColor(QPalette::Window, QColor::fromRgbF(0, 0, 0, 0.1f));
+            deleteButton->setStyleSheet("QWidget:hover {"
+                                        "background-color: #505050;"
+                                        "}"
+                                        );
+            deleteButton->setPalette(pal);
+        }
+
         positionLayout->addWidget(deleteButton);
         deleteButtons.append(deleteButton);
 
@@ -89,12 +150,35 @@ void MainWindow::displayPositions(const QString& searchText = "")
         QLabel* nameLabel = new QLabel(positionName, positionWidget);
         nameLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         nameLabel->setFont(QFont("Arial", 12));
+        nameLabel->setContentsMargins(10, 0, 0, 0);
         positionLayout->addWidget(nameLabel);
         positionLabels.append(nameLabel);
 
         // Crée un nouveau bouton "Interagir" pour la position
         QPushButton* interactButton = new QPushButton("➜", positionWidget);
         interactButton->setFixedSize(30, 30);
+        interactButton->setCursor(Qt::PointingHandCursor);
+
+        if (i % 2 == 0) {
+            QPalette pal = QPalette();
+            pal.setColor(QPalette::Window, QColor::fromRgbF(0, 0, 0, 0.1f));
+            interactButton->setStyleSheet("QWidget:hover {"
+                                        "background-color: #4A4A4A;"
+                                        "}"
+                                        );
+            interactButton->setPalette(pal);
+        }
+
+        if (i % 2 == 1) {
+            QPalette pal = QPalette();
+            pal.setColor(QPalette::Window, QColor::fromRgbF(0, 0, 0, 0.1f));
+            interactButton->setStyleSheet("QWidget:hover {"
+                                        "background-color: #505050;"
+                                        "}"
+                                        );
+            interactButton->setPalette(pal);
+        }
+
         positionLayout->addWidget(interactButton);
 
         // Connecte le signal clicked() du bouton de suppression à une fonction de suppression
@@ -195,7 +279,7 @@ void MainWindow::on_pushButton_clicked()
 {
     bool ok;
     QString text = QInputDialog::getText(this, tr("Choisir une touche"),
-                                         tr("Touche:"), QLineEdit::Normal,
+                                         tr("Touche :"), QLineEdit::Normal,
                                          "", &ok);
     if (ok && !text.isEmpty()) {
         // Convertir le texte entré en une touche virtuelle
@@ -215,7 +299,7 @@ void MainWindow::on_pushButton_2_clicked()
 {
     bool ok;
     QString text = QInputDialog::getText(this, tr("Choisir une touche"),
-                                         tr("Touche:"), QLineEdit::Normal,
+                                         tr("Touche :"), QLineEdit::Normal,
                                          "", &ok);
     if (ok && !text.isEmpty()) {
         // Convertir le texte entré en une touche virtuelle

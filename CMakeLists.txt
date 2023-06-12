@@ -21,6 +21,7 @@ set(PROJECT_SOURCES
         mainwindow.ui
         positionmanager.h
         positionmanager.cpp
+        resources.qrc
         ${TS_FILES}
 )
 

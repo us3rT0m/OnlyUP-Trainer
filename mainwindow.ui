@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string notr="true">Only Up! Trainer v1.0</string>
+   <string notr="true">Only Up! Trainer v2.0</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This program is 100% Open-source: &lt;a href=&quot;https://github.com/us3rT0m/OnlyUP-Trainer&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#aa5500;&quot;&gt;https://github.com/us3rT0m/OnlyUP-Trainer&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;If you enjoy my work, you can buy me a coffee&lt;span style=&quot; color:#000000;&quot;&gt; ♥&lt;/span&gt; : &lt;a href=&quot;https://www.buymeacoffee.com/t0mz3r&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#aa5500;&quot;&gt;https://www.buymeacoffee.com/t0mz3r&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This program is 100% Open-source: &lt;a href=&quot;https://github.com/us3rT0m/OnlyUP-Trainer&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#e5ac76;&quot;&gt;https://github.com/us3rT0m/OnlyUP-Trainer&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;If you enjoy my work, you can buy me a coffee ♥ : &lt;a href=&quot;https://www.buymeacoffee.com/t0mz3r&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#e5ac76;&quot;&gt;https://www.buymeacoffee.com/t0mz3r&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="textFormat">
      <enum>Qt::RichText</enum>
@@ -72,6 +72,18 @@
       <bold>true</bold>
      </font>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    border-radius: 10px;
+}
+</string>
+    </property>
     <property name="text">
      <string>Initialize Trainer</string>
     </property>
@@ -84,7 +96,7 @@
      <rect>
       <x>20</x>
       <y>20</y>
-      <width>331</width>
+      <width>341</width>
       <height>49</height>
      </rect>
     </property>
@@ -94,7 +106,10 @@
      </font>
     </property>
     <property name="text">
-     <string>Only Up! Trainer v1.0</string>
+     <string>Only Up! Trainer v2.0</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_teleport">
@@ -110,6 +125,18 @@
      <font>
       <pointsize>14</pointsize>
      </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    border-radius: 10px;
+}
+</string>
     </property>
     <property name="text">
      <string>Teleport to Position</string>
@@ -201,6 +228,18 @@
        <pointsize>10</pointsize>
       </font>
      </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-radius: 10px;
+}
+</string>
+     </property>
      <property name="text">
       <string>Save Position</string>
      </property>
@@ -218,6 +257,12 @@
       <font>
        <pointsize>10</pointsize>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+    border-radius: 10px;
+}
+</string>
      </property>
      <property name="text">
       <string/>
@@ -370,6 +415,18 @@
        <pointsize>10</pointsize>
       </font>
      </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-radius: 10px;
+}
+</string>
+     </property>
      <property name="text">
       <string>Update Position</string>
      </property>
@@ -382,6 +439,18 @@
        <width>71</width>
        <height>31</height>
       </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border-radius: 10px;
+}
+</string>
      </property>
      <property name="text">
       <string>Key save</string>
@@ -401,6 +470,22 @@
      <property name="spacing">
       <number>0</number>
      </property>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="maximumSize">
+        <size>
+         <width>500</width>
+         <height>200</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">image: url(:/logo.png);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
    <widget class="QPushButton" name="pushButton">
@@ -411,6 +496,18 @@
       <width>61</width>
       <height>51</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    border-radius: 10px;
+}
+</string>
     </property>
     <property name="text">
      <string>Key TP</string>
@@ -429,7 +526,7 @@
      <set>Qt::AlignCenter</set>
     </property>
     <property name="placeholderText">
-     <string>Search text</string>
+     <string>Search a save</string>
     </property>
    </widget>
   </widget>
