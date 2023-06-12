@@ -30,13 +30,19 @@ private:
     uintptr_t xCoord;
     uintptr_t yCoord;
     uintptr_t zCoord;
-    uintptr_t zVelocity;
-    uintptr_t yVelocity;
-    uintptr_t xVelocity;
+    uintptr_t zVelocityCoord;
+    uintptr_t yVelocityCoord;
+    uintptr_t xVelocityCoord;
     double x;
     double y;
     double z;
+    double xV;
+    double yV;
+    double zV;
     QMap<QString, QJsonObject> positions;
+    void initPos();
+    void initVelocity();
+    uintptr_t base_address;
 
     uintptr_t GetModuleBaseAddress(DWORD procId, const wchar_t* modName);
     void loadPositionsFromFile(const QString& filename);

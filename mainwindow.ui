@@ -102,7 +102,7 @@
      <rect>
       <x>380</x>
       <y>90</y>
-      <width>331</width>
+      <width>261</width>
       <height>51</height>
      </rect>
     </property>
@@ -361,7 +361,7 @@
       <rect>
        <x>10</x>
        <y>130</y>
-       <width>311</width>
+       <width>231</width>
        <height>31</height>
       </rect>
      </property>
@@ -374,14 +374,27 @@
       <string>Update Position</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>130</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Key save</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>90</y>
+      <y>120</y>
       <width>341</width>
-      <height>271</height>
+      <height>241</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_positions">
@@ -389,6 +402,35 @@
       <number>0</number>
      </property>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>90</y>
+      <width>61</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Key TP</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="searchCheckpoint">
+    <property name="geometry">
+     <rect>
+      <x>22</x>
+      <y>90</y>
+      <width>341</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="placeholderText">
+     <string>Search text</string>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

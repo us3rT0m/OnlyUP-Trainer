@@ -8,12 +8,19 @@
 #include <iostream>
 
 PositionManager::PositionManager() {
+    base_address = 0x000000;
     xCoord = 0x000000;
     yCoord = 0x000000;
     zCoord = 0x000000;
+    xVelocityCoord = 0x000000;
+    yVelocityCoord = 0x000000;
+    zVelocityCoord = 0x000000;
     x = 0.0;
     y = 0.0;
     z = 0.0;
+    xV = 150.0;
+    yV = 0.0;
+    zV = 0.0;
 }
 
 void PositionManager::init() {
@@ -22,7 +29,7 @@ void PositionManager::init() {
     // Vérifie si la fenêtre du jeu a été trouvée. Si ce n'est pas le cas, affiche un message d'erreur et termine le programme.
     if (!game_window) {
         std::cerr << "Impossible de trouver la fenêtre du jeu : " << GetLastError() << std::endl;
-        system("pause");
+                system("pause");
     }
 
     // Déclare une variable pour stocker l'ID du processus du jeu.
@@ -42,23 +49,28 @@ void PositionManager::init() {
     }
 
     const wchar_t* modName = L"OnlyUP-Win64-Shipping.exe";
-    uintptr_t base_address = GetModuleBaseAddress(process_id, modName);
-    //std::cout << "base_address: " << std::hex << base_address << std::endl;
+    base_address = GetModuleBaseAddress(process_id, modName);
 
+
+    initPos();
+    initVelocity();
+}
+
+void PositionManager::initPos(){
     // Déclare une variable pour stocker l'adresse actuelle + ajoutez l'offset au début de l'adresse.
     uintptr_t current_address = base_address + 0x07356580;
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-        system("pause");
+                system("pause");
     }
     //std::cout << "current_address: " << std::hex << current_address << std::endl;
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-        system("pause");
+                system("pause");
     }
     //std::cout << "current_address: " << std::hex << current_address << std::endl;
 
@@ -68,35 +80,35 @@ void PositionManager::init() {
     // Répète ce processus pour chaque offset.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-        system("pause");
+                system("pause");
     }
     //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0xA8;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-        system("pause");
+                system("pause");
     }
     //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0x50;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-        system("pause");
+                system("pause");
     }
     //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0xA60;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-        system("pause");
+                system("pause");
     }
     //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0xB0;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-        system("pause");
+                system("pause");
     }
     //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0x270;
@@ -106,6 +118,85 @@ void PositionManager::init() {
     yCoord = current_address;
     current_address -= 0x8;
     xCoord = current_address;
+}
+
+void PositionManager::initVelocity(){
+    // Déclare une variable pour stocker l'adresse actuelle + ajoutez l'offset au début de l'adresse.
+    uintptr_t current_address = base_address + 0x07356580;
+
+    // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
+                        system("pause");
+    }
+    //std::cout << "current_address: " << std::hex << current_address << std::endl;
+
+    // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
+                        system("pause");
+    }
+    //std::cout << "current_address: " << std::hex << current_address << std::endl;
+
+    // Ajoute l'offset à l'adresse actuelle.
+    current_address += 0x30;
+
+    // Répète ce processus pour chaque offset.
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
+                        system("pause");
+    }
+    //std::cout << "current_address: " << std::hex << current_address << std::endl;
+    current_address += 0x150;
+
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
+                        system("pause");
+    }
+    //std::cout << "current_address: " << std::hex << current_address << std::endl;
+    current_address += 0x60;
+
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
+                        system("pause");
+    }
+    //std::cout << "current_address: " << std::hex << current_address << std::endl;
+    current_address += 0x5F0;
+
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
+                        system("pause");
+    }
+    //std::cout << "current_address: " << std::hex << current_address << std::endl;
+    current_address += 0x10;
+
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
+                        system("pause");
+    }
+    //std::cout << "current_address: " << std::hex << current_address << std::endl;
+    current_address += 0x8;
+
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
+                        system("pause");
+    }
+    //std::cout << "current_address: " << std::hex << current_address << std::endl;
+    current_address += 0x6B0;
+
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
+                        system("pause");
+    }
+    //std::cout << "current_address: " << std::hex << current_address << std::endl;
+    current_address += 0xC8;
+
+
+    zVelocityCoord = current_address;
+    current_address -= 0x8;
+    yVelocityCoord = current_address;
+    current_address -= 0x8;
+    xVelocityCoord = current_address;
 }
 
 void PositionManager::createPosition(const QString& name) {
@@ -127,6 +218,10 @@ void PositionManager::teleport(){
     WriteProcessMemory(game_process, (void*)xCoord, &x, sizeof(x), nullptr);
     WriteProcessMemory(game_process, (void*)yCoord, &y, sizeof(y), nullptr);
     WriteProcessMemory(game_process, (void*)zCoord, &z, sizeof(z), nullptr);
+
+    WriteProcessMemory(game_process, (void*)xVelocityCoord, &xV, sizeof(x), nullptr);
+    WriteProcessMemory(game_process, (void*)yVelocityCoord, &yV, sizeof(y), nullptr);
+    WriteProcessMemory(game_process, (void*)zVelocityCoord, &zV, sizeof(z), nullptr);
 }
 
 void PositionManager::loadPos(){

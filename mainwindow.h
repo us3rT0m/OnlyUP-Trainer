@@ -16,8 +16,23 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    static MainWindow* instance;
+
+    void closeEvent(QCloseEvent *event) override;
+
+    void display_track();
+
+    void setPositionName(const QString &name);
+
+    PositionManager positionManager;
+
+    static LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
+
+    int vkCodeTP;
+    int vkCodeSAVE;
 
 private slots:
     void on_pushButton_init_clicked();
@@ -30,13 +45,18 @@ private slots:
 
     void on_label_linkActivated(const QString &link);
 
+    void on_pushButton_clicked();
+
+    void on_searchCheckpoint_textChanged(const QString &arg1);
+
+    void on_pushButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
-    PositionManager positionManager; // Déclarer l'objet PositionManager comme membre
-    void display_track();
-    void displayPositions();
+    void displayPositions(const QString& searchText);
     QScrollArea* scrollArea;
     QList<QLabel*> positionLabels; // Liste pour stocker les labels des positions
     QList<QPushButton*> deleteButtons; // Liste pour stocker les boutons de suppression
+    HHOOK hHook;
 };
 #endif // MAINWINDOW_H

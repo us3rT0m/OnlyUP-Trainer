@@ -2,13 +2,18 @@
 #include "./ui_mainwindow.h"
 #include "positionmanager.h"
 #include <iostream>
+#include <QInputDialog>
 
+MainWindow* MainWindow::instance = nullptr;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    instance = this;
+    UnhookWindowsHookEx(hHook);
+    hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(NULL), 0);
 }
 
 MainWindow::~MainWindow()
@@ -16,7 +21,13 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::displayPositions()
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    UnhookWindowsHookEx(hHook);
+    QMainWindow::closeEvent(event); // Appeler la fonction de base pour s'assurer que l'événement de fermeture est correctement traité
+}
+
+void MainWindow::displayPositions(const QString& searchText = "")
 {
     // Efface tous les labels et boutons précédemment affichés
     for (QLabel* label : positionLabels) {
@@ -49,6 +60,11 @@ void MainWindow::displayPositions()
     // Parcours les positions enregistrées dans le PositionManager
     int i = 0;
     for (const QString& positionName : positionManager.getPositions().keys()) {
+        // Si une chaîne de recherche est fournie et que le nom de la position ne la contient pas, passer à la suivante
+        if (!searchText.isEmpty() && !positionName.contains(searchText, Qt::CaseInsensitive)) {
+            continue;
+        }
+
         // Crée un nouveau widget pour regrouper les éléments de la position
         QWidget* positionWidget = new QWidget(this);
         if (i++ % 2 == 0) {
@@ -106,8 +122,6 @@ void MainWindow::displayPositions()
     ui->verticalLayout_positions->addWidget(scrollArea);
 }
 
-
-
 void MainWindow::on_pushButton_init_clicked()
 {
     positionManager.init();
@@ -150,3 +164,61 @@ void MainWindow::on_label_linkActivated(const QString &link)
     ui->lineEdit_pos_name->setText("selected");
 }
 
+
+
+void MainWindow::setPositionName(const QString &name){
+    ui->lineEdit_pos_name->setText(name);
+}
+
+LRESULT CALLBACK MainWindow::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
+    if (nCode == HC_ACTION) {
+        switch (wParam) {
+        case WM_KEYDOWN:
+        case WM_SYSKEYDOWN:
+            KBDLLHOOKSTRUCT *pKeyStruct = (KBDLLHOOKSTRUCT*)lParam;
+            if (pKeyStruct->vkCode == MainWindow::instance->vkCodeTP) {
+                // Faire quelque chose lorsque 'A' est pressé
+                MainWindow::instance->positionManager.teleport();
+            }else if(pKeyStruct->vkCode == MainWindow::instance->vkCodeSAVE){
+                // Faire quelque chose lorsque 'A' est pressé
+                MainWindow::instance->positionManager.track();
+                MainWindow::instance->display_track();
+            }
+            break;
+        }
+    }
+    // Appeler le prochain Hook dans la chaîne
+    return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Choisir une touche"),
+                                         tr("Touche:"), QLineEdit::Normal,
+                                         "", &ok);
+    if (ok && !text.isEmpty()) {
+        // Convertir le texte entré en une touche virtuelle
+        vkCodeTP = VkKeyScanEx(text[0].toLatin1(), GetKeyboardLayout(0)) & 0xFF;
+    }
+}
+
+
+void MainWindow::on_searchCheckpoint_textChanged(const QString& searchText)
+{
+    // Mettre à jour la liste des positions affichées
+    displayPositions(searchText);
+}
+
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Choisir une touche"),
+                                         tr("Touche:"), QLineEdit::Normal,
+                                         "", &ok);
+    if (ok && !text.isEmpty()) {
+        // Convertir le texte entré en une touche virtuelle
+        vkCodeSAVE = VkKeyScanEx(text[0].toLatin1(), GetKeyboardLayout(0)) & 0xFF;
+    }
+}
