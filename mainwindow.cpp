@@ -3,6 +3,7 @@
 #include "positionmanager.h"
 #include <iostream>
 #include <QInputDialog>
+#include <QSettings>
 
 MainWindow* MainWindow::instance = nullptr;
 
@@ -48,6 +49,8 @@ MainWindow::MainWindow(QWidget *parent)
                         );
 
     instance = this;
+    vkCodeTP = 0;
+    vkCodeSAVE = 0;
     UnhookWindowsHookEx(hHook);
     hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(NULL), 0);
 }
@@ -208,9 +211,10 @@ void MainWindow::displayPositions(const QString& searchText = "")
 
 void MainWindow::on_pushButton_init_clicked()
 {
-    positionManager.init();
-    positionManager.loadPos();
-    displayPositions();
+    if(!positionManager.init()){
+        positionManager.loadPos();
+        displayPositions();
+    }
 }
 
 void MainWindow::display_track(){
@@ -275,6 +279,18 @@ LRESULT CALLBACK MainWindow::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPAR
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 
+void saveKey(int key)
+{
+    QSettings settings("MonApplication", "MonProgramme");
+    settings.setValue("userKey", key);
+}
+
+int loadKey()
+{
+    QSettings settings("MonApplication", "MonProgramme");
+    return settings.value("userKey", -1).toInt(); // retourne -1 si la clé n'existe pas
+}
+
 void MainWindow::on_pushButton_clicked()
 {
     bool ok;
@@ -306,3 +322,20 @@ void MainWindow::on_pushButton_2_clicked()
         vkCodeSAVE = VkKeyScanEx(text[0].toLatin1(), GetKeyboardLayout(0)) & 0xFF;
     }
 }
+
+void MainWindow::on_btn_reset_drake_clicked()
+{
+    positionManager.resetDrake();
+}
+
+
+void MainWindow::on_btn_pause_drake_clicked()
+{
+    positionManager.pauseDrake();
+}
+
+void MainWindow::on_btn_speed_drake_clicked()
+{
+    positionManager.speedUpDrake();
+}
+

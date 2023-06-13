@@ -51,6 +51,12 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_btn_reset_drake_clicked();
+
+    void on_btn_pause_drake_clicked();
+
+    void on_btn_speed_drake_clicked();
+
 private:
     Ui::MainWindow *ui;
     void displayPositions(const QString& searchText);

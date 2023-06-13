@@ -18,21 +18,27 @@ PositionManager::PositionManager() {
     xVelocityCoord = 0x000000;
     yVelocityCoord = 0x000000;
     zVelocityCoord = 0x000000;
+    drakeDistSplineCoord = 0x000000;
+    drakeMouvementCoord = 0x000000;
     x = 0.0;
     y = 0.0;
     z = 0.0;
     xV = 150.0;
     yV = 0.0;
     zV = 0.0;
+    drakeDistSpline = 0.0;
+    drakeMouvement = 1;
+    DrakeInit = false;
 }
 
-void PositionManager::init() {
+int PositionManager::init() {
     // Trouve la fenêtre du jeu avec le nom "OnlyUP  " à l'aide de la fonction FindWindow.
     HWND game_window = FindWindow(NULL, L"OnlyUP  ");
     // Vérifie si la fenêtre du jeu a été trouvée. Si ce n'est pas le cas, affiche un message d'erreur et termine le programme.
     if (!game_window) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Impossible de trouver la fenêtre du jeu.");
+        return 1;
     }
 
     // Déclare une variable pour stocker l'ID du processus du jeu.
@@ -42,6 +48,7 @@ void PositionManager::init() {
     if (!process_id) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Impossible d'obtenir l'ID du processus.");
+        return 1;
     }
 
     // Ouvre le processus du jeu avec tous les droits d'accès.
@@ -49,30 +56,49 @@ void PositionManager::init() {
     if (!game_process) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Impossible d'ouvrir le processus.");
+        return 1;
     }
 
     const wchar_t* modName = L"OnlyUP-Win64-Shipping.exe";
     base_address = GetModuleBaseAddress(process_id, modName);
+    if (!base_address) {
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Impossible d'obtenir la base address du module du jeu.");
+        return 1;
+    }
 
-
-    initPos();
-    initVelocity();
+    // Initialisation des différentes zone mémoire du jeu.
+    if(!initPos()){
+        if(!initVelocity()){
+            if(!initDrake()){
+                return 0;
+            }else{
+                return 1;
+            }
+        }else{
+            return 1;
+        }
+    }else{
+        return 1;
+    }
 }
 
-void PositionManager::initPos(){
+int PositionManager::initPos(){
     // Déclare une variable pour stocker l'adresse actuelle + ajoutez l'offset au début de l'adresse.
     uintptr_t current_address = base_address + 0x07356580;
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #1");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #1");
+        return 1;
     }
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #2");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #2");
+        return 1;
     }
 
     // Ajoute l'offset à l'adresse actuelle.
@@ -81,31 +107,36 @@ void PositionManager::initPos(){
     // Répète ce processus pour chaque offset.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #3");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #3");
+        return 1;
     }
     current_address += 0xA8;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #4");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #4");
+        return 1;
     }
     current_address += 0x50;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #5");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #5");
+        return 1;
     }
     current_address += 0xA60;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #6");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #6");
+        return 1;
     }
     current_address += 0xB0;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #7");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #7");
+        return 1;
     }
     current_address += 0x270;
 
@@ -114,22 +145,27 @@ void PositionManager::initPos(){
     yCoord = current_address;
     current_address -= 0x8;
     xCoord = current_address;
+
+    return 0;
 }
 
-void PositionManager::initVelocity(){
+
+int PositionManager::initVelocity(){
     // Déclare une variable pour stocker l'adresse actuelle + ajoutez l'offset au début de l'adresse.
     uintptr_t current_address = base_address + 0x07356580;
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #8");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #8");
+        return 1;
     }
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #9");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #9");
+        return 1;
     }
 
     // Ajoute l'offset à l'adresse actuelle.
@@ -138,43 +174,50 @@ void PositionManager::initVelocity(){
     // Répète ce processus pour chaque offset.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #10");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #10");
+        return 1;
     }
     current_address += 0x150;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #11");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #11");
+        return 1;
     }
     current_address += 0x60;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #12");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #12");
+        return 1;
     }
     current_address += 0x5F0;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #13");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #13");
+        return 1;
     }
     current_address += 0x10;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #14");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #14");
+        return 1;
     }
     current_address += 0x8;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #15");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #15");
+        return 1;
     }
     current_address += 0x6B0;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #16");
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #16");
+        return 1;
     }
     current_address += 0xC8;
 
@@ -184,6 +227,71 @@ void PositionManager::initVelocity(){
     yVelocityCoord = current_address;
     current_address -= 0x8;
     xVelocityCoord = current_address;
+
+    return 0;
+}
+
+int PositionManager::initDrake(){
+    // Déclare une variable pour stocker l'adresse actuelle + ajoutez l'offset au début de l'adresse.
+    uintptr_t current_address = base_address + 0x07356580;
+
+    // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #17");
+        return 1;
+    }
+
+    // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #18");
+        return 1;
+    }
+
+    // Ajoute l'offset à l'adresse actuelle.
+    current_address += 0x5E0;
+
+    // Répète ce processus pour chaque offset.
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #19");
+        return 1;
+    }
+    current_address += 0x5D8;
+
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #20");
+        return 1;
+    }
+    current_address += 0x28;
+
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #21");
+        return 1;
+    }
+    current_address += 0x60;
+
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #22");
+        return 1;
+    }
+    current_address += 0x6D0;
+
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #23");
+        return 1;
+    }
+    current_address += 0x7C;
+    drakeDistSplineCoord = current_address;
+    current_address -= 0x4;
+    drakeMouvementCoord = current_address;
+
+    return 0;
 }
 
 void PositionManager::createPosition(const QString& name) {
@@ -239,7 +347,8 @@ void PositionManager::savePositionsToFile(const QString& filename) {
     QJsonDocument doc(root);
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {
-        qDebug() << "Erreur lors de l'ouverture du fichier :" << file.errorString();
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'ouverture du fichier de checkpoint.");
         return;
     }
 
@@ -251,7 +360,8 @@ void PositionManager::loadPositionsFromFile(const QString& filename)
 {
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Erreur lors de l'ouverture du fichier :" << file.errorString();
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'ouverture du fichier de checkpoint.");
         return;
     }
 
@@ -260,7 +370,8 @@ void PositionManager::loadPositionsFromFile(const QString& filename)
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData);
     if (jsonDoc.isNull()) {
-        qDebug() << "Erreur lors de la lecture du fichier JSON.";
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture du fichier de checkpoint.");
         return;
     }
 
@@ -289,7 +400,8 @@ uintptr_t PositionManager::GetModuleBaseAddress(DWORD procId, const wchar_t* mod
         }
     }
     else {
-        std::cerr << "Erreur lors de la création du snapshot de module : " << GetLastError() << std::endl;
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la création du snapshot de module.");
     }
     CloseHandle(hSnap);
     return modBaseAddr;
@@ -312,4 +424,51 @@ void PositionManager::usePosition(const QString& positionName){
 QMap<QString, QJsonObject> PositionManager::getPositions() const
 {
     return positions;
+}
+
+void PositionManager::isDrakeInit(){
+//    float tempValue = 0.f;
+    if (!ReadProcessMemory(game_process, (void*)drakeDistSplineCoord, nullptr, sizeof(nullptr), nullptr)) {
+        initDrake();
+    }else{
+        if(!DrakeInit){
+            DrakeInit = true;
+        }
+    }
+}
+
+void PositionManager::resetDrake(){
+    if(!DrakeInit){
+        isDrakeInit();
+    }
+    WriteProcessMemory(game_process, (void*)drakeDistSplineCoord, &drakeDistSpline, sizeof(drakeDistSpline), nullptr);
+}
+
+void PositionManager::speedUpDrake(){
+    if(!DrakeInit){
+        isDrakeInit();
+    }
+    ReadProcessMemory(game_process, (void*)drakeMouvementCoord, &drakeMouvement, sizeof(drakeMouvement), nullptr);
+
+    drakeMouvement+=1;
+
+    WriteProcessMemory(game_process, (void*)drakeMouvementCoord, &drakeMouvement, sizeof(drakeMouvement), nullptr);
+}
+
+void PositionManager::pauseDrake(){
+    if(!DrakeInit){
+        isDrakeInit();
+    }
+    ReadProcessMemory(game_process, (void*)drakeMouvementCoord, &drakeMouvement, sizeof(drakeMouvement), nullptr);
+
+    const float pausedDrake = 0.0f;
+    const float movingDrake = 1.0f;
+
+    if(drakeMouvement != pausedDrake){
+        drakeMouvement = pausedDrake;
+    }else{
+        drakeMouvement = movingDrake;
+    }
+
+    WriteProcessMemory(game_process, (void*)drakeMouvementCoord, &drakeMouvement, sizeof(drakeMouvement), nullptr);
 }
