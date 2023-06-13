@@ -6,6 +6,9 @@
 #include <Windows.h>
 #include <TlHelp32.h>
 #include <iostream>
+#include <QMessageBox>
+#include <QTextStream>
+#include <QDebug>
 
 PositionManager::PositionManager() {
     base_address = 0x000000;
@@ -28,8 +31,8 @@ void PositionManager::init() {
     HWND game_window = FindWindow(NULL, L"OnlyUP  ");
     // Vérifie si la fenêtre du jeu a été trouvée. Si ce n'est pas le cas, affiche un message d'erreur et termine le programme.
     if (!game_window) {
-        std::cerr << "Impossible de trouver la fenêtre du jeu : " << GetLastError() << std::endl;
-                system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Impossible de trouver la fenêtre du jeu.");
     }
 
     // Déclare une variable pour stocker l'ID du processus du jeu.
@@ -37,15 +40,15 @@ void PositionManager::init() {
     // Obtient l'ID du processus du jeu à partir de la fenêtre du jeu.
     GetWindowThreadProcessId(game_window, &process_id);
     if (!process_id) {
-        std::cerr << "Impossible d'obtenir l'ID du processus : " << GetLastError() << std::endl;
-        system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Impossible d'obtenir l'ID du processus.");
     }
 
     // Ouvre le processus du jeu avec tous les droits d'accès.
     game_process = OpenProcess(PROCESS_ALL_ACCESS, true, process_id);
     if (!game_process) {
-        std::cerr << "Impossible d'ouvrir le processus : " << GetLastError() << std::endl;
-        system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Impossible d'ouvrir le processus.");
     }
 
     const wchar_t* modName = L"OnlyUP-Win64-Shipping.exe";
@@ -62,55 +65,48 @@ void PositionManager::initPos(){
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-        std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #1");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-        std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #2");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
 
     // Ajoute l'offset à l'adresse actuelle.
     current_address += 0x30;
 
     // Répète ce processus pour chaque offset.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-        std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #3");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0xA8;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-        std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #4");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0x50;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-        std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #5");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0xA60;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-        std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #6");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0xB0;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-        std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #7");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0x270;
 
     zCoord = current_address;
@@ -126,69 +122,60 @@ void PositionManager::initVelocity(){
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                        system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #8");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                        system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #9");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
 
     // Ajoute l'offset à l'adresse actuelle.
     current_address += 0x30;
 
     // Répète ce processus pour chaque offset.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                        system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #10");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0x150;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                        system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #11");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0x60;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                        system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #12");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0x5F0;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                        system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #13");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0x10;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                        system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #14");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0x8;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                        system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #15");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0x6B0;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-                std::cerr << "Erreur lors de la lecture de la mémoire du processus : " << GetLastError() << std::endl;
-                        system("pause");
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture de la mémoire du processus : offset #16");
     }
-    //std::cout << "current_address: " << std::hex << current_address << std::endl;
     current_address += 0xC8;
 
 

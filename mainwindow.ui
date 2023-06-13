@@ -76,7 +76,7 @@
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="autoFillBackground">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
@@ -130,7 +130,7 @@
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="autoFillBackground">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
@@ -232,7 +232,7 @@
       <cursorShape>PointingHandCursor</cursorShape>
      </property>
      <property name="autoFillBackground">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="styleSheet">
       <string notr="true">QPushButton {
@@ -406,7 +406,7 @@
       <rect>
        <x>10</x>
        <y>130</y>
-       <width>231</width>
+       <width>211</width>
        <height>31</height>
       </rect>
      </property>
@@ -419,7 +419,7 @@
       <cursorShape>PointingHandCursor</cursorShape>
      </property>
      <property name="autoFillBackground">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="styleSheet">
       <string notr="true">QPushButton {
@@ -434,9 +434,9 @@
     <widget class="QPushButton" name="pushButton_2">
      <property name="geometry">
       <rect>
-       <x>250</x>
+       <x>230</x>
        <y>130</y>
-       <width>71</width>
+       <width>91</width>
        <height>31</height>
       </rect>
      </property>
@@ -444,7 +444,7 @@
       <cursorShape>PointingHandCursor</cursorShape>
      </property>
      <property name="autoFillBackground">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="styleSheet">
       <string notr="true">QPushButton {
@@ -501,7 +501,7 @@
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="autoFillBackground">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
