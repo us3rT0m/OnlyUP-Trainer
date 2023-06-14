@@ -67,14 +67,12 @@ int PositionManager::init() {
         return 1;
     }
 
+    DrakeInit = false;
+
     // Initialisation des différentes zone mémoire du jeu.
     if(!initPos()){
         if(!initVelocity()){
-            if(!initDrake()){
-                return 0;
-            }else{
-                return 1;
-            }
+            return 0;
         }else{
             return 1;
         }
@@ -231,14 +229,14 @@ int PositionManager::initDrake(){
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #17");
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'initialisation du dragon #17");
         return 1;
     }
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #18");
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'initialisation du dragon #18");
         return 1;
     }
 
@@ -248,45 +246,45 @@ int PositionManager::initDrake(){
     // Répète ce processus pour chaque offset.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #19");
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'initialisation du dragon #19");
         return 1;
     }
-    current_address += 0x4B8;
+    current_address += 0x170;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #20");
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'initialisation du dragon #20");
         return 1;
     }
-    current_address += 0x4E8;
+    current_address += 0x50;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #21");
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'initialisation du dragon #21");
         return 1;
     }
-    current_address += 0x2F0;
+    current_address += 0x28;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #22");
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'initialisation du dragon #22");
         return 1;
     }
-    current_address += 0x1F0;
+    current_address += 0x8;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #23");
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'initialisation du dragon #23");
         return 1;
     }
-    current_address += 0x140;
+    current_address += 0x70;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #23");
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'initialisation du dragon #23");
             return 1;
     }
-    current_address += 0xAC;
+    current_address += 0x7C;
 
     drakeDistSplineCoord = current_address;
     current_address -= 0x4;
