@@ -27,6 +27,7 @@ public:
     void pauseDrake();
     void speedUpDrake();
     void speedDownDrake();
+    void resetSpeedDrake();
 
 
 private:

@@ -344,3 +344,9 @@ void MainWindow::on_btn_speed_drake_down_clicked()
     positionManager.speedDownDrake();
 }
 
+
+void MainWindow::on_btn_speed_drake_clicked()
+{
+    positionManager.resetSpeedDrake();
+}
+

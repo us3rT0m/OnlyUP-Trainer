@@ -484,3 +484,18 @@ void PositionManager::pauseDrake(){
 
     WriteProcessMemory(game_process, (void*)drakeMouvementCoord, &drakeMouvement, sizeof(drakeMouvement), nullptr);
 }
+
+void PositionManager::resetSpeedDrake(){
+    if(!DrakeInit){
+        isDrakeInit();
+    }
+
+    const float pausedDrake = 0.0f;
+    const float movingDrake = 1.0f;
+
+    if(drakeMouvement != pausedDrake){
+        drakeMouvement = movingDrake;
+    }
+
+    WriteProcessMemory(game_process, (void*)drakeMouvementCoord, &drakeMouvement, sizeof(drakeMouvement), nullptr);
+}
