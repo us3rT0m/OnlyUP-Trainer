@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string notr="true">Only Up! Trainer v2.1</string>
+   <string notr="true">Only Up! Trainer v2.2</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -106,7 +106,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Only Up! Trainer v2.1</string>
+     <string>Only Up! Trainer v2.2</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>

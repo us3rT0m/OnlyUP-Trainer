@@ -177,46 +177,39 @@ int PositionManager::initVelocity(){
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #10");
         return 1;
     }
-    current_address += 0x150;
+    current_address += 0xA8;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #11");
         return 1;
     }
-    current_address += 0x60;
+    current_address += 0x50;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #12");
         return 1;
     }
-    current_address += 0x5F0;
+    current_address += 0xAB8;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #13");
         return 1;
     }
-    current_address += 0x10;
+    current_address += 0x20;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #14");
         return 1;
     }
-    current_address += 0x8;
+    current_address += 0x320;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #15");
-        return 1;
-    }
-    current_address += 0x6B0;
-
-    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
-        // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #16");
         return 1;
     }
     current_address += 0xC8;
@@ -250,7 +243,7 @@ int PositionManager::initDrake(){
     }
 
     // Ajoute l'offset à l'adresse actuelle.
-    current_address += 0x5E0;
+    current_address += 0x2B0;
 
     // Répète ce processus pour chaque offset.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
@@ -258,35 +251,43 @@ int PositionManager::initDrake(){
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #19");
         return 1;
     }
-    current_address += 0x5D8;
+    current_address += 0x4B8;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #20");
         return 1;
     }
-    current_address += 0x28;
+    current_address += 0x4E8;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #21");
         return 1;
     }
-    current_address += 0x60;
+    current_address += 0x2F0;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #22");
         return 1;
     }
-    current_address += 0x6D0;
+    current_address += 0x1F0;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #23");
         return 1;
     }
-    current_address += 0x7C;
+    current_address += 0x140;
+
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #23");
+            return 1;
+    }
+    current_address += 0xAC;
+
     drakeDistSplineCoord = current_address;
     current_address -= 0x4;
     drakeMouvementCoord = current_address;
