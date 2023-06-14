@@ -55,7 +55,9 @@ private slots:
 
     void on_btn_pause_drake_clicked();
 
-    void on_btn_speed_drake_clicked();
+    void on_btn_speed_drake_up_clicked();
+
+    void on_btn_speed_drake_down_clicked();
 
 private:
     Ui::MainWindow *ui;

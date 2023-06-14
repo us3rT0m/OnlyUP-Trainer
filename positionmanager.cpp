@@ -455,6 +455,18 @@ void PositionManager::speedUpDrake(){
     WriteProcessMemory(game_process, (void*)drakeMouvementCoord, &drakeMouvement, sizeof(drakeMouvement), nullptr);
 }
 
+void PositionManager::speedDownDrake(){
+    if(!DrakeInit){
+        isDrakeInit();
+    }
+    ReadProcessMemory(game_process, (void*)drakeMouvementCoord, &drakeMouvement, sizeof(drakeMouvement), nullptr);
+
+    drakeMouvement-=1;
+
+    WriteProcessMemory(game_process, (void*)drakeMouvementCoord, &drakeMouvement, sizeof(drakeMouvement), nullptr);
+}
+
+
 void PositionManager::pauseDrake(){
     if(!DrakeInit){
         isDrakeInit();
