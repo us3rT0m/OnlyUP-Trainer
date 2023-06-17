@@ -1,8 +1,8 @@
 # OnlyUP Trainer
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE.md)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE.md) [![Github All Releases](https://img.shields.io/github/downloads/us3rT0m/OnlyUP-Trainer/total.svg)]()
 
-Ce projet est à destination des speedrunneurs. Le principe est simple. Vous pouvez créer des checkpoints et vous y téléporter pour pouvoir s'entrainer sur des passages en particulier de votre courses.
+This project is for speedrunners. The principle is simple. You can create checkpoints and teleport there to train on particular passages of your run.
 
 
 ## Demo
@@ -10,30 +10,30 @@ Ce projet est à destination des speedrunneurs. Le principe est simple. Vous pou
 ![demo.png](./demo.png)
 
 
-## Fonctionnalités
+## Features
 
-- Créer des checkpoints personnalisé
-- Se téléporter à des checkpoints
-
-
-## Utilisation
-
-- Vous devez lancer le programme en administrateur
-- Une fois en jeu appuyez sur "Initialise trainer"
-- Pour supprimer un checkpoint appuyez sur 🗑 à gauche du nom
-- Pour utiliser un checkpoint appuyez sur → à droite du nom
-- Appuyer sur Teleport pour se téléporté aux coordonnées indiqué en dessous
-- Pour créer un checkpoint personnalisé, appuyez sur track pos pour enregistré pour position actuelle dans les coordonnées en dessous. Donner lui un nom puis cliquez sur save pos.
+- Create custom checkpoints
+- Create a key for quick saving position
+- Teleport to checkpoints
+- Create a key for fast teleportation
+- Reset dragon position
+- Changing the speed of the dragon
 
 
-## Auteur
+## How to use
+
+- You must launch the program as an administrator
+- Once in the game, when you can move not the main menu press "Initialise trainer"
+
+
+## Author
 
 - [@us3rT0m](https://www.github.com/us3rT0m)
 
 
 ## Contribution
 
-Les contributions sont toujours les bienvenues!
+Contributions are always welcome!
 
 
 ## License
@@ -43,4 +43,4 @@ Les contributions sont toujours les bienvenues!
 
 ## Support
 
-Si vous avez un problème, merci de nous contacter sur [discord](https://discord.gg/hzJu8VmFnN) !
+If you have issues, please contact us on [discord](https://discord.gg/hzJu8VmFnN) !
