@@ -83,7 +83,7 @@ int PositionManager::init() {
 
 int PositionManager::initPos(){
     // Déclare une variable pour stocker l'adresse actuelle + ajoutez l'offset au début de l'adresse.
-    uintptr_t current_address = base_address + 0x07356580;
+    uintptr_t current_address = base_address + 0x073C5ED8;
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
@@ -91,6 +91,9 @@ int PositionManager::initPos(){
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #1");
         return 1;
     }
+
+    // Ajoute l'offset à l'adresse actuelle.
+    current_address += 0x180;
 
     // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
@@ -100,7 +103,7 @@ int PositionManager::initPos(){
     }
 
     // Ajoute l'offset à l'adresse actuelle.
-    current_address += 0x30;
+    current_address += 0xA0;
 
     // Répète ce processus pour chaque offset.
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
@@ -108,28 +111,28 @@ int PositionManager::initPos(){
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #3");
         return 1;
     }
-    current_address += 0xA8;
+    current_address += 0x98;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #4");
         return 1;
     }
-    current_address += 0x50;
+    current_address += 0xA8;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #5");
         return 1;
     }
-    current_address += 0xA60;
+    current_address += 0x60;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Run non trouvé #6");
         return 1;
     }
-    current_address += 0xB0;
+    current_address += 0x328;
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
@@ -281,7 +284,7 @@ int PositionManager::initDrake(){
 
     if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
         // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'initialisation du dragon #23");
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'initialisation du dragon #24");
             return 1;
     }
     current_address += 0x7C;
