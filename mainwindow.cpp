@@ -1,11 +1,15 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "positionmanager.h"
+#include "config.h"
 #include <iostream>
 #include <QInputDialog>
 #include <QSettings>
+#include <QTranslator>
 
 MainWindow* MainWindow::instance = nullptr;
+extern QTranslator translator;
+extern Config config;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -15,7 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     QIcon windowIcon(":/logo.png"); // Chemin de l'image dans le fichier .qrc
     setWindowIcon(windowIcon);
-
 
     qApp->setStyleSheet("QMainWindow { background-color: #323232; }"
                         "QPushButton {"
@@ -46,11 +49,41 @@ MainWindow::MainWindow(QWidget *parent)
                         "QWidget {"
                         "background-color: #424242;"
                         "}"
+                        "QComboBox {"
+                        "color: white;"
+                        "}"
+                        "QComboBox QAbstractItemView {"
+                        "color: white;"
+                        "}"
                         );
 
+    ui->languageSelector->blockSignals(true);
+    ui->languageSelector->addItem("English", "en");
+    ui->languageSelector->addItem("中文", "zh");
+    ui->languageSelector->blockSignals(false);
+
+    // Select current language
+    QString currentLang = config.get("lang");
+    qDebug() << "Current lang: " << currentLang;
+    int index = ui->languageSelector->findData(currentLang);
+    if (index != -1) {
+        ui->languageSelector->setCurrentIndex(index);
+    }
+
     instance = this;
-    vkCodeTP = 0;
-    vkCodeSAVE = 0;
+//    vkCodeTP = 0;
+//    vkCodeSAVE = 0;
+    QString vkCodeSAVEString = config.get("vkCodeSAVE");
+    bool ok;
+    vkCodeSAVE = vkCodeSAVEString.toInt(&ok);
+    if(!ok){
+        vkCodeSAVE = 0;
+    }
+    QString vkCodeTPString = config.get("vkCodeTP");
+    vkCodeTP = vkCodeTPString.toInt(&ok);
+    if(!ok){
+        vkCodeTP = 0;
+    }
     UnhookWindowsHookEx(hHook);
     hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(NULL), 0);
 }
@@ -300,6 +333,8 @@ void MainWindow::on_pushButton_clicked()
     if (ok && !text.isEmpty()) {
         // Convertir le texte entré en une touche virtuelle
         vkCodeTP = VkKeyScanEx(text[0].toLatin1(), GetKeyboardLayout(0)) & 0xFF;
+        config.set("vkCodeTP", QString::number(vkCodeTP));
+        config.save("config.ini");
     }
 }
 
@@ -320,6 +355,8 @@ void MainWindow::on_pushButton_2_clicked()
     if (ok && !text.isEmpty()) {
         // Convertir le texte entré en une touche virtuelle
         vkCodeSAVE = VkKeyScanEx(text[0].toLatin1(), GetKeyboardLayout(0)) & 0xFF;
+        config.set("vkCodeSAVE", QString::number(vkCodeSAVE));
+        config.save("config.ini");
     }
 }
 
@@ -350,3 +387,30 @@ void MainWindow::on_btn_speed_drake_clicked()
     positionManager.resetSpeedDrake();
 }
 
+
+void MainWindow::on_languageSelector_currentIndexChanged(int index)
+{
+    QString newLang = ui->languageSelector->itemData(index).toString();
+
+    // Change la langue dans le fichier de config
+    config.set("lang", newLang);
+    config.save("config.ini");
+
+    // Recharge la traduction
+    QLocale locale;
+    if (newLang == "en") {
+        locale = QLocale(QLocale::English, QLocale::UnitedKingdom);
+    } else if (newLang == "fr") {
+        locale = QLocale(QLocale::French, QLocale::France);
+    } else if (newLang == "zh") {
+        locale = QLocale(QLocale::Chinese, QLocale::China);
+    }
+
+    const QString baseName = "OnlyUP_Trainer_" + locale.name();
+    if (translator.load(":/i18n/" + baseName)) {
+        qApp->installTranslator(&translator);
+        ui->retranslateUi(this);  // retranslate the user interface
+    } else {
+        qDebug() << "Failed to load translation:" << baseName;
+    }
+}

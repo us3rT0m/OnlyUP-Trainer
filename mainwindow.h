@@ -61,6 +61,8 @@ private slots:
 
     void on_btn_speed_drake_clicked();
 
+    void on_languageSelector_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     void displayPositions(const QString& searchText);

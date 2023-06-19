@@ -1,4 +1,8 @@
 <RCC>
+    <qresource prefix="/i18n">
+        <file>OnlyUP_Trainer_zh.qm</file>
+        <file>OnlyUP_Trainer_en.qm</file>
+    </qresource>
     <qresource prefix="/">
         <file>logo.png</file>
         <file>fr-flag.png</file>

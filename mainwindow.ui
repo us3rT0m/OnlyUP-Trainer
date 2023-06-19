@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string notr="true">Only Up! Trainer v2.3</string>
+   <string>Only Up! Trainer v2.4</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -39,10 +39,15 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>420</y>
+      <y>400</y>
       <width>341</width>
-      <height>51</height>
+      <height>71</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI</family>
+     </font>
     </property>
     <property name="text">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you enjoy my work, you can buy me a coffee ♥ : &lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.buymeacoffee.com/t0mz3r&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#e5ac76;&quot;&gt;https://www.buymeacoffee.com/t0mz3r&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -68,6 +73,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Microsoft YaHei UI</family>
       <pointsize>16</pointsize>
       <bold>true</bold>
      </font>
@@ -102,6 +108,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Microsoft YaHei UI</family>
       <pointsize>22</pointsize>
      </font>
     </property>
@@ -109,7 +116,7 @@
      <string notr="true"/>
     </property>
     <property name="text">
-     <string>Only Up! Trainer v2.3</string>
+     <string>Only Up! Trainer v2.4</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -126,6 +133,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Microsoft YaHei UI</family>
       <pointsize>14</pointsize>
      </font>
     </property>
@@ -182,7 +190,7 @@
       </font>
      </property>
      <property name="text">
-      <string>X</string>
+      <string notr="true">X</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_y">
@@ -201,7 +209,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Y</string>
+      <string notr="true">Y</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_z">
@@ -220,7 +228,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Z</string>
+      <string notr="true">Z</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_save">
@@ -234,6 +242,7 @@
      </property>
      <property name="font">
       <font>
+       <family>Microsoft YaHei UI</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -264,6 +273,7 @@
      </property>
      <property name="font">
       <font>
+       <family>Microsoft YaHei UI</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -291,6 +301,7 @@
      </property>
      <property name="font">
       <font>
+       <family>Microsoft YaHei UI</family>
        <pointsize>14</pointsize>
        <bold>true</bold>
       </font>
@@ -310,6 +321,7 @@
      </property>
      <property name="font">
       <font>
+       <family>Microsoft YaHei UI</family>
        <pointsize>14</pointsize>
       </font>
      </property>
@@ -329,7 +341,7 @@
       <number>1</number>
      </property>
      <property name="text">
-      <string>0.0</string>
+      <string notr="true">0.0</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -346,6 +358,7 @@
      </property>
      <property name="font">
       <font>
+       <family>Microsoft YaHei UI</family>
        <pointsize>14</pointsize>
       </font>
      </property>
@@ -365,7 +378,7 @@
       <number>1</number>
      </property>
      <property name="text">
-      <string>0.0</string>
+      <string notr="true">0.0</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -382,6 +395,7 @@
      </property>
      <property name="font">
       <font>
+       <family>Microsoft YaHei UI</family>
        <pointsize>14</pointsize>
       </font>
      </property>
@@ -401,7 +415,7 @@
       <number>1</number>
      </property>
      <property name="text">
-      <string>0.0</string>
+      <string notr="true">0.0</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -418,6 +432,7 @@
      </property>
      <property name="font">
       <font>
+       <family>Microsoft YaHei UI</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -445,6 +460,11 @@
        <width>91</width>
        <height>31</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Microsoft YaHei UI</family>
+      </font>
      </property>
      <property name="cursor">
       <cursorShape>PointingHandCursor</cursorShape>
@@ -503,6 +523,11 @@
       <height>51</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI</family>
+     </font>
+    </property>
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
@@ -527,6 +552,11 @@
       <width>341</width>
       <height>22</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI</family>
+     </font>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -559,6 +589,11 @@
        <height>40</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <family>Microsoft YaHei UI</family>
+      </font>
+     </property>
      <property name="cursor">
       <cursorShape>PointingHandCursor</cursorShape>
      </property>
@@ -572,7 +607,7 @@
 </string>
      </property>
      <property name="text">
-      <string>Speed Drake (Reset)</string>
+      <string>Drake Speed (Reset)</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_speed_drake_up">
@@ -598,7 +633,7 @@
      </property>
      <property name="font">
       <font>
-       <family>Calibri</family>
+       <family>Microsoft YaHei UI</family>
        <pointsize>12</pointsize>
        <bold>true</bold>
       </font>
@@ -616,7 +651,7 @@
 </string>
      </property>
      <property name="text">
-      <string>+</string>
+      <string notr="true">+</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_speed_drake_down">
@@ -642,7 +677,7 @@
      </property>
      <property name="font">
       <font>
-       <family>LEMON MILK</family>
+       <family>Microsoft YaHei UI</family>
        <pointsize>12</pointsize>
        <bold>false</bold>
       </font>
@@ -660,7 +695,7 @@
 </string>
      </property>
      <property name="text">
-      <string>–</string>
+      <string notr="true">–</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_pause_drake">
@@ -671,6 +706,11 @@
        <width>120</width>
        <height>40</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Microsoft YaHei UI</family>
+      </font>
      </property>
      <property name="cursor">
       <cursorShape>PointingHandCursor</cursorShape>
@@ -696,6 +736,11 @@
        <width>120</width>
        <height>40</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Microsoft YaHei UI</family>
+      </font>
      </property>
      <property name="cursor">
       <cursorShape>PointingHandCursor</cursorShape>
@@ -728,6 +773,33 @@
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="languageSelector">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>500</y>
+      <width>81</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI</family>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+     </font>
+    </property>
+    <property name="currentText">
+     <string notr="true"/>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+    </property>
+    <property name="placeholderText">
+     <string notr="true"/>
     </property>
    </widget>
   </widget>
