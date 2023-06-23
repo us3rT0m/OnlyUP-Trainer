@@ -6,6 +6,7 @@
 #include <QInputDialog>
 #include <QSettings>
 #include <QTranslator>
+#include <QMessageBox>
 
 MainWindow* MainWindow::instance = nullptr;
 extern QTranslator translator;
@@ -86,6 +87,9 @@ MainWindow::MainWindow(QWidget *parent)
     }
     UnhookWindowsHookEx(hHook);
     hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(NULL), 0);
+
+    this->flyHotkeyEnabled = true;
+    this->flyActive = false;
 }
 
 MainWindow::~MainWindow()
@@ -244,7 +248,16 @@ void MainWindow::displayPositions(const QString& searchText = "")
 
 void MainWindow::on_pushButton_init_clicked()
 {
-    if(!positionManager.init()){
+    // Trouve la fenêtre du jeu avec le nom "OnlyUP  " à l'aide de la fonction FindWindow.
+    this->game_window = FindWindow(NULL, L"OnlyUP  ");
+    // Vérifie si la fenêtre du jeu a été trouvée. Si ce n'est pas le cas, affiche un message d'erreur et termine le programme.
+    if (!this->game_window) {
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Impossible de trouver la fenêtre du jeu.");
+        return;
+    }
+
+    if (!positionManager.init(this->game_window)) {
         positionManager.loadPos();
         displayPositions();
     }
@@ -293,17 +306,69 @@ void MainWindow::setPositionName(const QString &name){
 
 LRESULT CALLBACK MainWindow::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode == HC_ACTION) {
+        if (GetForegroundWindow() != MainWindow::instance->game_window) {
+            return 0;
+        }
+
+        KBDLLHOOKSTRUCT *pKeyStruct = (KBDLLHOOKSTRUCT*)lParam;
+
+        MainWindow *instance = MainWindow::instance;
+
         switch (wParam) {
         case WM_KEYDOWN:
         case WM_SYSKEYDOWN:
-            KBDLLHOOKSTRUCT *pKeyStruct = (KBDLLHOOKSTRUCT*)lParam;
-            if (pKeyStruct->vkCode == MainWindow::instance->vkCodeTP) {
+            if (pKeyStruct->vkCode == instance->vkCodeTP) {
                 // Faire quelque chose lorsque 'A' est pressé
-                MainWindow::instance->positionManager.teleport();
-            }else if(pKeyStruct->vkCode == MainWindow::instance->vkCodeSAVE){
+                instance->positionManager.teleport();
+            } else if(pKeyStruct->vkCode == instance->vkCodeSAVE){
                 // Faire quelque chose lorsque 'A' est pressé
-                MainWindow::instance->positionManager.track();
-                MainWindow::instance->display_track();
+                instance->positionManager.track();
+                instance->display_track();
+            } else if (pKeyStruct->vkCode == 'F' && instance->flyHotkeyEnabled) {
+                instance->flyActive = !instance->flyActive;
+                if (!instance->flyActive) {
+                    instance->positionManager.disableFlyMode();
+                }
+                return 1;
+            } else if (pKeyStruct->vkCode == 'W' && instance->flyActive) {
+                instance->positionManager.setFlyForwards(true);
+                return 1;
+            } else if (pKeyStruct->vkCode == 'A' && instance->flyActive) {
+                instance->positionManager.setFlyLeft(true);
+                return 1;
+            } else if (pKeyStruct->vkCode == 'S' && instance->flyActive) {
+                instance->positionManager.setFlyBackwards(true);
+                return 1;
+            } else if (pKeyStruct->vkCode == 'D' && instance->flyActive) {
+                instance->positionManager.setFlyRight(true);
+                return 1;
+            } else if (pKeyStruct->vkCode == VK_SPACE && instance->flyActive) {
+                instance->positionManager.setFlyUp(true);
+                return 1;
+            } else if (pKeyStruct->vkCode == VK_LSHIFT && instance->flyActive) {
+                instance->positionManager.setFlyDown(true);
+                return 1;
+            }
+            break;
+        case WM_KEYUP:
+            if (pKeyStruct->vkCode == 'W') {
+                instance->positionManager.setFlyForwards(false);
+                return 1;
+            } else if (pKeyStruct->vkCode == 'A') {
+                instance->positionManager.setFlyLeft(false);
+                return 1;
+            } else if (pKeyStruct->vkCode == 'S') {
+                instance->positionManager.setFlyBackwards(false);
+                return 1;
+            } else if (pKeyStruct->vkCode == 'D') {
+                instance->positionManager.setFlyRight(false);
+                return 1;
+            } else if (pKeyStruct->vkCode == VK_SPACE) {
+                instance->positionManager.setFlyUp(false);
+                return 1;
+            } else if (pKeyStruct->vkCode == VK_LSHIFT) {
+                instance->positionManager.setFlyDown(false);
+                return 1;
             }
             break;
         }
@@ -414,3 +479,13 @@ void MainWindow::on_languageSelector_currentIndexChanged(int index)
         qDebug() << "Failed to load translation:" << baseName;
     }
 }
+
+void MainWindow::on_chk_fly_hotkey_stateChanged(int state)
+{
+    this->flyHotkeyEnabled = state == Qt::CheckState::Checked;
+    if (!this->flyHotkeyEnabled) {
+        this->flyActive = false;
+        this->positionManager.disableFlyMode();
+    }
+}
+
