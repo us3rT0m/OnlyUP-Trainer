@@ -33,7 +33,7 @@ PositionManager::PositionManager() {
 
 int PositionManager::init() {
     // Trouve la fenêtre du jeu avec le nom "OnlyUP  " à l'aide de la fonction FindWindow.
-    HWND game_window = FindWindow(NULL, L"OnlyUP  ");
+    HWND game_window = FindWindow(NULL, "OnlyUP  ");
     // Vérifie si la fenêtre du jeu a été trouvée. Si ce n'est pas le cas, affiche un message d'erreur et termine le programme.
     if (!game_window) {
         // Affichage du message d'erreur dans une boîte de dialogue
@@ -59,7 +59,7 @@ int PositionManager::init() {
         return 1;
     }
 
-    const wchar_t* modName = L"OnlyUP-Win64-Shipping.exe";
+    const char* modName = "OnlyUP-Win64-Shipping.exe";
     base_address = GetModuleBaseAddress(process_id, modName);
     if (!base_address) {
         // Affichage du message d'erreur dans une boîte de dialogue
@@ -386,7 +386,7 @@ void PositionManager::loadPositionsFromFile(const QString& filename)
     }
 }
 
-uintptr_t PositionManager::GetModuleBaseAddress(DWORD procId, const wchar_t* modName) {
+uintptr_t PositionManager::GetModuleBaseAddress(DWORD procId, const char* modName) {
     uintptr_t modBaseAddr = 0;
     HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, procId);
     if (hSnap != INVALID_HANDLE_VALUE) {
@@ -394,7 +394,7 @@ uintptr_t PositionManager::GetModuleBaseAddress(DWORD procId, const wchar_t* mod
         modEntry.dwSize = sizeof(modEntry);
         if (Module32First(hSnap, &modEntry)) {
             do {
-                if (!_wcsicmp(modEntry.szModule, modName)) {
+                if (!strcmp(modEntry.szModule, modName)) {
                     modBaseAddr = (uintptr_t)modEntry.modBaseAddr;
                     break;
                 }

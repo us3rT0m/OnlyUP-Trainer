@@ -19,6 +19,8 @@ set(PROJECT_SOURCES
         mainwindow.ui
         positionmanager.h
         positionmanager.cpp
+        keyboardmapper.h
+        keyboardmapper.cpp
         config.h
         config.cpp
         resources.qrc
