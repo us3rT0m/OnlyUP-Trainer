@@ -18,6 +18,7 @@ This project is for speedrunners. The principle is simple. You can create checkp
 - Create a key for fast teleportation
 - Reset dragon position
 - Changing the speed of the dragon
+- Keyboard keys remap (see file `keys.json`)
 
 
 ## How to use
