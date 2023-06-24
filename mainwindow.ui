@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>770</width>
-    <height>550</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,13 +19,13 @@
   <property name="minimumSize">
    <size>
     <width>770</width>
-    <height>550</height>
+    <height>600</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>770</width>
-    <height>550</height>
+    <height>600</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -39,7 +39,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>400</y>
+      <y>450</y>
       <width>341</width>
       <height>71</height>
      </rect>
@@ -569,7 +569,7 @@
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>390</y>
+      <y>440</y>
       <width>331</width>
       <height>120</height>
      </rect>
@@ -763,7 +763,7 @@
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>480</y>
+      <y>530</y>
       <width>261</width>
       <height>20</height>
      </rect>
@@ -779,7 +779,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>500</y>
+      <y>550</y>
       <width>81</width>
       <height>22</height>
      </rect>
@@ -801,6 +801,38 @@
     <property name="placeholderText">
      <string notr="true"/>
     </property>
+   </widget>
+   <widget class="QFrame" name="frame_3">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>370</y>
+      <width>331</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QCheckBox" name="chk_fly_hotkey">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>151</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>F = Toggle Fly Mode</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

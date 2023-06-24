@@ -9,6 +9,8 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QDebug>
+#include <QThread>
+#include <QtMath>
 
 PositionManager::PositionManager() {
     base_address = 0x000000;
@@ -29,17 +31,11 @@ PositionManager::PositionManager() {
     drakeDistSpline = 0.0;
     drakeMouvement = 1;
     DrakeInit = false;
+    disableFlyMode();
 }
 
-int PositionManager::init() {
-    // Trouve la fenêtre du jeu avec le nom "OnlyUP  " à l'aide de la fonction FindWindow.
-    HWND game_window = FindWindow(NULL, L"OnlyUP  ");
-    // Vérifie si la fenêtre du jeu a été trouvée. Si ce n'est pas le cas, affiche un message d'erreur et termine le programme.
-    if (!game_window) {
-        // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Impossible de trouver la fenêtre du jeu.");
-        return 1;
-    }
+int PositionManager::init(HWND gameWindow) {
+    game_window = gameWindow;
 
     // Déclare une variable pour stocker l'ID du processus du jeu.
     DWORD process_id = 0;
@@ -67,6 +63,18 @@ int PositionManager::init() {
         return 1;
     }
 
+    QThread *thread = nullptr;
+    auto threadTest = std::function<void ()> ([&]() {
+        while (true) {
+            this->updateFly();
+
+            thread->usleep(5000);
+        }
+    });
+
+    thread = QThread::create(threadTest);
+    thread->start();
+
     DrakeInit = false;
 
     // Initialisation des différentes zone mémoire du jeu.
@@ -79,6 +87,98 @@ int PositionManager::init() {
     }else{
         return 1;
     }
+}
+
+void PositionManager::updateFly() {
+    bool fly = this->flyLeft || this->flyRight || this->flyUp || this->flyDown || this->flyForwards || this->flyBackwards;
+    if (fly || this->hovering) {
+        double vel = 0;
+        WriteProcessMemory(game_process, (void*)xVelocityCoord, &vel, sizeof(vel), nullptr);
+        WriteProcessMemory(game_process, (void*)yVelocityCoord, &vel, sizeof(vel), nullptr);
+        WriteProcessMemory(game_process, (void*)zVelocityCoord, &vel, sizeof(vel), nullptr);
+    }
+
+    if (!fly) return;
+
+    double currentX, currentY, currentZ, rot;
+
+    ReadProcessMemory(game_process, (void*)rotCoord, &rot, sizeof(rot), nullptr);
+    ReadProcessMemory(game_process, (void*)xCoord, &currentX, sizeof(currentX), nullptr);
+    ReadProcessMemory(game_process, (void*)yCoord, &currentY, sizeof(currentY), nullptr);
+    ReadProcessMemory(game_process, (void*)zCoord, &currentZ, sizeof(currentZ), nullptr);
+
+    if (this->flyUp) {
+        currentZ += 15.0;
+    } else if (this->flyDown) {
+        currentZ -= 15.0;
+    }
+
+    double forwardAngle = 0;
+    if (this->flyLeft) {
+        forwardAngle = -45;
+    } else if (this->flyRight) {
+        forwardAngle = 45;
+    }
+
+    if (this->flyForwards) {
+        double rotRadians = qDegreesToRadians(rot + forwardAngle);
+        currentX += 10.0 * cos(rotRadians);
+        currentY += 10.0 * sin(rotRadians);
+    } else if (this->flyBackwards) {
+        double rotRadians = qDegreesToRadians(rot - forwardAngle);
+        currentX -= 10.0 * cos(rotRadians);
+        currentY -= 10.0 * sin(rotRadians);
+    } else if (this->flyLeft) {
+        double rotLeft = qDegreesToRadians(rot - 90);
+        currentX += 10.0 * cos(rotLeft);
+        currentY += 10.0 * sin(rotLeft);
+    } else if (this->flyRight) {
+        double rotRight = qDegreesToRadians(rot + 90);
+        currentX += 10.0 * cos(rotRight);
+        currentY += 10.0 * sin(rotRight);
+    }
+
+    WriteProcessMemory(game_process, (void*)xCoord, &currentX, sizeof(currentX), nullptr);
+    WriteProcessMemory(game_process, (void*)yCoord, &currentY, sizeof(currentY), nullptr);
+    WriteProcessMemory(game_process, (void*)zCoord, &currentZ, sizeof(currentZ), nullptr);
+}
+
+void PositionManager::setFlyForwards(bool flyForward) {
+    this->flyForwards = flyForward;
+}
+
+void PositionManager::setFlyBackwards(bool flyForward) {
+    this->flyBackwards = flyForward;
+}
+
+void PositionManager::setFlyUp(bool flyUp) {
+    this->flyUp = flyUp;
+}
+
+void PositionManager::setFlyDown(bool flyDown) {
+    this->flyDown = flyDown;
+}
+
+void PositionManager::setFlyLeft(bool flyLeft) {
+    this->flyLeft = flyLeft;
+}
+
+void PositionManager::setFlyRight(bool flyRight) {
+    this->flyRight = flyRight;
+}
+
+void PositionManager::setHovering(bool hovering) {
+    this->hovering = hovering;
+}
+
+void PositionManager::disableFlyMode() {
+    this->flyForwards = false;
+    this->flyBackwards = false;
+    this->flyUp = false;
+    this->flyDown = false;
+    this->flyLeft = false;
+    this->flyRight = false;
+    this->hovering = false;
 }
 
 int PositionManager::initPos(){
@@ -146,6 +246,8 @@ int PositionManager::initPos(){
     yCoord = current_address;
     current_address -= 0x8;
     xCoord = current_address;
+    current_address -= 0x78;
+    rotCoord = current_address;
 
     return 0;
 }

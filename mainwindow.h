@@ -33,6 +33,8 @@ public:
 
     int vkCodeTP;
     int vkCodeSAVE;
+    bool flyHotkeyEnabled;
+    bool flyActive;
 
 private slots:
     void on_pushButton_init_clicked();
@@ -63,12 +65,16 @@ private slots:
 
     void on_languageSelector_currentIndexChanged(int index);
 
+    void on_chk_fly_hotkey_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
     void displayPositions(const QString& searchText);
     QScrollArea* scrollArea;
     QList<QLabel*> positionLabels; // Liste pour stocker les labels des positions
     QList<QPushButton*> deleteButtons; // Liste pour stocker les boutons de suppression
+    HWND game_window;
     HHOOK hHook;
+    void disableFlyMode();
 };
 #endif // MAINWINDOW_H
