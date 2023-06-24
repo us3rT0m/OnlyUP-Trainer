@@ -328,6 +328,8 @@ LRESULT CALLBACK MainWindow::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPAR
                 instance->flyActive = !instance->flyActive;
                 if (!instance->flyActive) {
                     instance->positionManager.disableFlyMode();
+                } else {
+                    instance->positionManager.setHovering(true);
                 }
                 return 1;
             } else if (pKeyStruct->vkCode == 'W' && instance->flyActive) {
