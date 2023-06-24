@@ -353,22 +353,22 @@ LRESULT CALLBACK MainWindow::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPAR
             }
             break;
         case WM_KEYUP:
-            if (pKeyStruct->vkCode == 'W') {
+            if (pKeyStruct->vkCode == 'W' && instance->flyActive) {
                 instance->positionManager.setFlyForwards(false);
                 return 1;
-            } else if (pKeyStruct->vkCode == 'A') {
+            } else if (pKeyStruct->vkCode == 'A' && instance->flyActive) {
                 instance->positionManager.setFlyLeft(false);
                 return 1;
-            } else if (pKeyStruct->vkCode == 'S') {
+            } else if (pKeyStruct->vkCode == 'S' && instance->flyActive) {
                 instance->positionManager.setFlyBackwards(false);
                 return 1;
-            } else if (pKeyStruct->vkCode == 'D') {
+            } else if (pKeyStruct->vkCode == 'D' && instance->flyActive) {
                 instance->positionManager.setFlyRight(false);
                 return 1;
-            } else if (pKeyStruct->vkCode == VK_SPACE) {
+            } else if (pKeyStruct->vkCode == VK_SPACE && instance->flyActive) {
                 instance->positionManager.setFlyUp(false);
                 return 1;
-            } else if (pKeyStruct->vkCode == VK_LSHIFT) {
+            } else if (pKeyStruct->vkCode == VK_LSHIFT && instance->flyActive) {
                 instance->positionManager.setFlyDown(false);
                 return 1;
             }
