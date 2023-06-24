@@ -54,7 +54,7 @@ private:
     int initDrake();
     uintptr_t base_address;
 
-    uintptr_t GetModuleBaseAddress(DWORD procId, const wchar_t* modName);
+    uintptr_t GetModuleBaseAddress(DWORD procId, const char* modName);
     void loadPositionsFromFile(const QString& filename);
     void isDrakeInit();
     bool DrakeInit;

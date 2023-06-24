@@ -8,12 +8,15 @@
 #include <QMessageBox>
 #include <QDebug>
 
+#include "keyboardmapper.h"
+
 QTranslator translator;
 Config config("config.ini");
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    KeyboardMapper kbm;
 
     #if defined(QT_DEBUG)
         // Redirection de la sortie de débogage vers la console
