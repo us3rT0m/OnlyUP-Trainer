@@ -1,6 +1,7 @@
 #include <iostream>
-#include <psapi.h>
 #include <algorithm>
+#include <Windows.h>
+#include <Psapi.h>
 
 #include <QMessageBox>
 #include <QTextStream>
@@ -20,7 +21,7 @@ KeyboardMapper::KeyboardMapper()
 {
     QFile file("keys.json");
     if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'ouverture du fichier de checkpoint.");
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'ouverture du fichier \"keys.json\".");
         return;
     }
 
@@ -29,7 +30,7 @@ KeyboardMapper::KeyboardMapper()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData);
     if (jsonDoc.isNull()) {
-        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture du fichier de checkpoint.");
+        QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture du fichier \"keys.json\".");
         return;
     }
 
@@ -196,7 +197,7 @@ LRESULT CALLBACK KeyboardMapper::hookFunction(int code, WPARAM wParam, LPARAM lP
     }
 
 
-    KBDLLHOOKSTRUCT*  kbd = (KBDLLHOOKSTRUCT*)lParam;
+    KBDLLHOOKSTRUCT* kbd = (KBDLLHOOKSTRUCT*)lParam;
     INPUT inputs[1];
 
     inputs[0].type = INPUT_KEYBOARD;
