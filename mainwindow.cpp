@@ -55,6 +55,9 @@ MainWindow::MainWindow(QWidget *parent)
                         "QComboBox QAbstractItemView {"
                         "color: white;"
                         "}"
+                        "QRadioButton {"
+                        "color: white;"
+                        "}"
                         );
 
     ui->languageSelector->blockSignals(true);
@@ -64,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Select current language
     QString currentLang = config.get("lang");
-    qDebug() << "Current lang: " << currentLang;
+//    qDebug() << "Current lang: " << currentLang;
     int index = ui->languageSelector->findData(currentLang);
     if (index != -1) {
         ui->languageSelector->setCurrentIndex(index);
@@ -242,11 +245,33 @@ void MainWindow::displayPositions(const QString& searchText = "")
     ui->verticalLayout_positions->addWidget(scrollArea);
 }
 
+void MainWindow::displayFps(){
+    float fps = positionManager.getFps();
+    if(fps == 30){
+        ui->fps_30->blockSignals(true);
+        ui->fps_30->setChecked(true);
+        ui->fps_30->blockSignals(false);
+    }else if(fps == 60){
+        ui->fps_60->blockSignals(true);
+        ui->fps_60->setChecked(true);
+        ui->fps_60->blockSignals(false);
+    }else if(fps == 90){
+        ui->fps_90->blockSignals(true);
+        ui->fps_90->setChecked(true);
+        ui->fps_90->blockSignals(false);
+    }else if(fps == 120){
+        ui->fps_120->blockSignals(true);
+        ui->fps_120->setChecked(true);
+        ui->fps_120->blockSignals(false);
+    }
+}
+
 void MainWindow::on_pushButton_init_clicked()
 {
     if(!positionManager.init()){
         positionManager.loadPos();
         displayPositions();
+        displayFps();
     }
 }
 
@@ -293,19 +318,51 @@ void MainWindow::setPositionName(const QString &name){
 
 LRESULT CALLBACK MainWindow::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode == HC_ACTION) {
+        KBDLLHOOKSTRUCT *pKeyStruct = (KBDLLHOOKSTRUCT*)lParam;
+        float speed = 1000.0; // Ajustez cela en fonction de la vitesse de vol désirée
+        if(MainWindow::instance->positionManager.getFlyHack()){
+            MainWindow::instance->positionManager.stopMovement();
+        }
         switch (wParam) {
-        case WM_KEYDOWN:
-        case WM_SYSKEYDOWN:
-            KBDLLHOOKSTRUCT *pKeyStruct = (KBDLLHOOKSTRUCT*)lParam;
-            if (pKeyStruct->vkCode == MainWindow::instance->vkCodeTP) {
-                // Faire quelque chose lorsque 'A' est pressé
-                MainWindow::instance->positionManager.teleport();
-            }else if(pKeyStruct->vkCode == MainWindow::instance->vkCodeSAVE){
-                // Faire quelque chose lorsque 'A' est pressé
-                MainWindow::instance->positionManager.track();
-                MainWindow::instance->display_track();
+            case WM_KEYDOWN:
+            case WM_SYSKEYDOWN: {
+                if (pKeyStruct->vkCode == MainWindow::instance->vkCodeTP) {
+                    // Faire quelque chose lorsque 'A' est pressé
+                    MainWindow::instance->positionManager.teleport();
+                }else if(pKeyStruct->vkCode == MainWindow::instance->vkCodeSAVE){
+                    // Faire quelque chose lorsque 'A' est pressé
+                    MainWindow::instance->positionManager.track();
+                    MainWindow::instance->display_track();
+                } else if (MainWindow::instance->positionManager.getFlyHack()) {
+                    MainWindow::instance->positionManager.stopFlyHack();
+                    qDebug() << pKeyStruct->vkCode;
+                    if (pKeyStruct->vkCode == 87) {
+                        MainWindow::instance->positionManager.updateVelocity(speed, 0, 0);
+                    } else if (pKeyStruct->vkCode == 83) {
+                        MainWindow::instance->positionManager.updateVelocity(-speed, 0, 0);
+                    } else if (pKeyStruct->vkCode == 81) {
+                        MainWindow::instance->positionManager.updateVelocity(0, 0, -speed);
+                    } else if (pKeyStruct->vkCode == 69) {
+                        MainWindow::instance->positionManager.updateVelocity(0, 0, speed);
+                    } else if (pKeyStruct->vkCode == 68) {
+                        MainWindow::instance->positionManager.updateVelocity(0, speed, 0);
+                    } else if (pKeyStruct->vkCode == 65) {
+                        MainWindow::instance->positionManager.updateVelocity(0, -speed, 0);
+                    }
+                }
+                break;
             }
-            break;
+            case WM_KEYUP:
+            case WM_SYSKEYUP:{
+                if (MainWindow::instance->positionManager.getFlyHack() &&
+                           (pKeyStruct->vkCode == 'W' || pKeyStruct->vkCode == 'S' ||
+                            pKeyStruct->vkCode == 'A' || pKeyStruct->vkCode == 'D' ||
+                            pKeyStruct->vkCode == 'E' || pKeyStruct->vkCode == 'Q')) {
+                    MainWindow::instance->positionManager.stopMovement();
+                    MainWindow::instance->positionManager.startFlyHack();
+                }
+                break;
+            }
         }
     }
     // Appeler le prochain Hook dans la chaîne
@@ -413,4 +470,38 @@ void MainWindow::on_languageSelector_currentIndexChanged(int index)
     } else {
         qDebug() << "Failed to load translation:" << baseName;
     }
+}
+
+void MainWindow::on_flyRadioButton_toggled(bool checked)
+{
+
+    positionManager.setFlyHack(checked);
+    if(checked){
+        positionManager.startFlyHack();
+    }else{
+        positionManager.stopFlyHack();
+    }
+}
+
+void MainWindow::on_fps_30_toggled(bool checked)
+{
+    positionManager.setFps(30.f);
+}
+
+
+void MainWindow::on_fps_60_toggled(bool checked)
+{
+    positionManager.setFps(60.f);
+}
+
+
+void MainWindow::on_fps_90_toggled(bool checked)
+{
+    positionManager.setFps(90.f);
+}
+
+
+void MainWindow::on_fps_120_toggled(bool checked)
+{
+    positionManager.setFps(120.f);
 }

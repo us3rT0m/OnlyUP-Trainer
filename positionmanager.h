@@ -5,6 +5,8 @@
 #include <QString>
 #include <QMap>
 #include <Windows.h>
+#include <thread>
+#include <atomic>
 
 class PositionManager
 {
@@ -28,7 +30,14 @@ public:
     void speedUpDrake();
     void speedDownDrake();
     void resetSpeedDrake();
-
+    void updateVelocity(double x, double y, double z);
+    void stopMovement();
+    void setFlyHack(bool isFlyHack);
+    bool getFlyHack();
+    void startFlyHack();
+    void stopFlyHack();
+    float getFps();
+    void setFps(float newFps);
 
 private:
     HANDLE game_process;
@@ -40,6 +49,7 @@ private:
     uintptr_t xVelocityCoord;
     uintptr_t drakeDistSplineCoord;
     uintptr_t drakeMouvementCoord;
+    uintptr_t fpsCoord;
     double x;
     double y;
     double z;
@@ -48,11 +58,18 @@ private:
     double zV;
     float drakeDistSpline;
     float drakeMouvement;
+    float fps;
     QMap<QString, QJsonObject> positions;
     int initPos();
     int initVelocity();
     int initDrake();
+    int initFps();
     uintptr_t base_address;
+
+    bool flyHack;
+    std::thread flightThread;
+    std::atomic_bool flightThreadRunning;
+    void flightThreadFunction();
 
     uintptr_t GetModuleBaseAddress(DWORD procId, const wchar_t* modName);
     void loadPositionsFromFile(const QString& filename);

@@ -63,6 +63,16 @@ private slots:
 
     void on_languageSelector_currentIndexChanged(int index);
 
+    void on_flyRadioButton_toggled(bool checked);
+
+    void on_fps_30_toggled(bool checked);
+
+    void on_fps_60_toggled(bool checked);
+
+    void on_fps_90_toggled(bool checked);
+
+    void on_fps_120_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     void displayPositions(const QString& searchText);
@@ -70,5 +80,6 @@ private:
     QList<QLabel*> positionLabels; // Liste pour stocker les labels des positions
     QList<QPushButton*> deleteButtons; // Liste pour stocker les boutons de suppression
     HHOOK hHook;
+    void displayFps();
 };
 #endif // MAINWINDOW_H

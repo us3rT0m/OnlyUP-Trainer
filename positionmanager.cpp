@@ -20,6 +20,7 @@ PositionManager::PositionManager() {
     zVelocityCoord = 0x000000;
     drakeDistSplineCoord = 0x000000;
     drakeMouvementCoord = 0x000000;
+    fpsCoord = 0x000000;
     x = 0.0;
     y = 0.0;
     z = 0.0;
@@ -29,6 +30,8 @@ PositionManager::PositionManager() {
     drakeDistSpline = 0.0;
     drakeMouvement = 1;
     DrakeInit = false;
+    flyHack = false;
+    fps = 60;
 }
 
 int PositionManager::init() {
@@ -72,7 +75,11 @@ int PositionManager::init() {
     // Initialisation des différentes zone mémoire du jeu.
     if(!initPos()){
         if(!initVelocity()){
-            return 0;
+            if(!initFps()){
+                return 0;
+            }else{
+                return 1;
+            }
         }else{
             return 1;
         }
@@ -296,6 +303,32 @@ int PositionManager::initDrake(){
     return 0;
 }
 
+int PositionManager::initFps(){
+    // Déclare une variable pour stocker l'adresse actuelle + ajoutez l'offset au début de l'adresse.
+    uintptr_t current_address = base_address + 0x0788DC58;
+
+    // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la prochaine adresse.
+    if (!ReadProcessMemory(game_process, (void*)current_address, &current_address, sizeof(current_address), nullptr)) {
+            // Affichage du message d'erreur dans une boîte de dialogue
+            QMessageBox::critical(nullptr, "Erreur", "Erreur lors de l'initialisation des fps #25");
+            return 1;
+    }
+
+    // Ajoute l'offset à l'adresse actuelle.
+    current_address += 0x48;
+
+    fpsCoord = current_address;
+
+    // Lit la mémoire du processus du jeu à l'adresse actuelle pour obtenir la valeur des fps.
+    if (!ReadProcessMemory(game_process, (void*)fpsCoord, &fps, sizeof(fps), nullptr)) {
+            // Affichage du message d'erreur dans une boîte de dialogue
+            QMessageBox::critical(nullptr, "Erreur", "Erreur lors de la lecture des fps #27");
+            return 1;
+    }
+
+    return 0;
+}
+
 void PositionManager::createPosition(const QString& name) {
     QJsonObject positionJson;
     positionJson["x"] = x;
@@ -316,9 +349,9 @@ void PositionManager::teleport(){
     WriteProcessMemory(game_process, (void*)yCoord, &y, sizeof(y), nullptr);
     WriteProcessMemory(game_process, (void*)zCoord, &z, sizeof(z), nullptr);
 
-    WriteProcessMemory(game_process, (void*)xVelocityCoord, &xV, sizeof(x), nullptr);
-    WriteProcessMemory(game_process, (void*)yVelocityCoord, &yV, sizeof(y), nullptr);
-    WriteProcessMemory(game_process, (void*)zVelocityCoord, &zV, sizeof(z), nullptr);
+    WriteProcessMemory(game_process, (void*)xVelocityCoord, &xV, sizeof(xV), nullptr);
+    WriteProcessMemory(game_process, (void*)yVelocityCoord, &yV, sizeof(yV), nullptr);
+    WriteProcessMemory(game_process, (void*)zVelocityCoord, &zV, sizeof(zV), nullptr);
 }
 
 void PositionManager::loadPos(){
@@ -501,3 +534,52 @@ void PositionManager::resetSpeedDrake(){
 
     WriteProcessMemory(game_process, (void*)drakeMouvementCoord, &drakeMouvement, sizeof(drakeMouvement), nullptr);
 }
+
+bool PositionManager::getFlyHack(){
+    return flyHack;
+}
+
+void PositionManager::setFlyHack(bool isFlyHack){
+    flyHack = isFlyHack;
+}
+
+void PositionManager::updateVelocity(double x, double y, double z) {
+    // Mettre à jour la vélocité
+    WriteProcessMemory(game_process, (void*)xVelocityCoord, &x, sizeof(x), nullptr);
+    WriteProcessMemory(game_process, (void*)yVelocityCoord, &y, sizeof(y), nullptr);
+    WriteProcessMemory(game_process, (void*)zVelocityCoord, &z, sizeof(z), nullptr);
+}
+
+void PositionManager::stopMovement() {
+    updateVelocity(0, 0, 0);
+}
+
+void PositionManager::startFlyHack() {
+    flightThreadRunning = true;
+    flightThread = std::thread(&PositionManager::flightThreadFunction, this);
+}
+
+void PositionManager::stopFlyHack() {
+    flightThreadRunning = false;
+    if (flightThread.joinable()) {
+        flightThread.join();
+    }
+}
+
+void PositionManager::flightThreadFunction() {
+    while (flightThreadRunning) {
+        this->stopMovement();
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
+
+float PositionManager::getFps(){
+    ReadProcessMemory(game_process, (void*)fpsCoord, &fps, sizeof(fps), nullptr);
+    return fps;
+}
+
+void PositionManager::setFps(float newFps){
+    fps = newFps;
+    WriteProcessMemory(game_process, (void*)fpsCoord, &fps, sizeof(fps), nullptr);
+}
+
