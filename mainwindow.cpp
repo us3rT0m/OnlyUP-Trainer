@@ -269,6 +269,7 @@ void MainWindow::displayFps(){
 void MainWindow::on_pushButton_init_clicked()
 {
     if(!positionManager.init()){
+        this->game_window = positionManager.getGameWindow();
         positionManager.loadPos();
         displayPositions();
         displayFps();
@@ -318,48 +319,27 @@ void MainWindow::setPositionName(const QString &name){
 
 LRESULT CALLBACK MainWindow::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode == HC_ACTION) {
-        KBDLLHOOKSTRUCT *pKeyStruct = (KBDLLHOOKSTRUCT*)lParam;
-        float speed = 1000.0; // Ajustez cela en fonction de la vitesse de vol désirée
-        if(MainWindow::instance->positionManager.getFlyHack()){
-            MainWindow::instance->positionManager.stopMovement();
+        if (GetForegroundWindow() != MainWindow::instance->game_window) {
+            return 0;
         }
+
+        KBDLLHOOKSTRUCT *pKeyStruct = (KBDLLHOOKSTRUCT*)lParam;
+        float speed = 1000.0;
         switch (wParam) {
             case WM_KEYDOWN:
             case WM_SYSKEYDOWN: {
                 if (pKeyStruct->vkCode == MainWindow::instance->vkCodeTP) {
-                    // Faire quelque chose lorsque 'A' est pressé
                     MainWindow::instance->positionManager.teleport();
                 }else if(pKeyStruct->vkCode == MainWindow::instance->vkCodeSAVE){
-                    // Faire quelque chose lorsque 'A' est pressé
                     MainWindow::instance->positionManager.track();
                     MainWindow::instance->display_track();
                 } else if (MainWindow::instance->positionManager.getFlyHack()) {
-                    MainWindow::instance->positionManager.stopFlyHack();
                     qDebug() << pKeyStruct->vkCode;
-                    if (pKeyStruct->vkCode == 87) {
-                        MainWindow::instance->positionManager.updateVelocity(speed, 0, 0);
-                    } else if (pKeyStruct->vkCode == 83) {
-                        MainWindow::instance->positionManager.updateVelocity(-speed, 0, 0);
-                    } else if (pKeyStruct->vkCode == 81) {
+                    if (pKeyStruct->vkCode == 81) {
                         MainWindow::instance->positionManager.updateVelocity(0, 0, -speed);
                     } else if (pKeyStruct->vkCode == 69) {
                         MainWindow::instance->positionManager.updateVelocity(0, 0, speed);
-                    } else if (pKeyStruct->vkCode == 68) {
-                        MainWindow::instance->positionManager.updateVelocity(0, speed, 0);
-                    } else if (pKeyStruct->vkCode == 65) {
-                        MainWindow::instance->positionManager.updateVelocity(0, -speed, 0);
                     }
-                }
-                break;
-            }
-            case WM_KEYUP:
-            case WM_SYSKEYUP:{
-                if (MainWindow::instance->positionManager.getFlyHack() &&
-                           (pKeyStruct->vkCode == 'W' || pKeyStruct->vkCode == 'S' ||
-                            pKeyStruct->vkCode == 'A' || pKeyStruct->vkCode == 'D' ||
-                            pKeyStruct->vkCode == 'E' || pKeyStruct->vkCode == 'Q')) {
-                    MainWindow::instance->positionManager.stopMovement();
-                    MainWindow::instance->positionManager.startFlyHack();
                 }
                 break;
             }
@@ -474,13 +454,7 @@ void MainWindow::on_languageSelector_currentIndexChanged(int index)
 
 void MainWindow::on_flyRadioButton_toggled(bool checked)
 {
-
     positionManager.setFlyHack(checked);
-    if(checked){
-        positionManager.startFlyHack();
-    }else{
-        positionManager.stopFlyHack();
-    }
 }
 
 void MainWindow::on_fps_30_toggled(bool checked)

@@ -15,6 +15,8 @@ PositionManager::PositionManager() {
     xCoord = 0x000000;
     yCoord = 0x000000;
     zCoord = 0x000000;
+    rotationCoord = 0x000000;
+    flyCoord = 0x000000;
     xVelocityCoord = 0x000000;
     yVelocityCoord = 0x000000;
     zVelocityCoord = 0x000000;
@@ -32,11 +34,16 @@ PositionManager::PositionManager() {
     DrakeInit = false;
     flyHack = false;
     fps = 60;
+    game_window = NULL;
+}
+
+HWND PositionManager::getGameWindow(){
+    return game_window;
 }
 
 int PositionManager::init() {
     // Trouve la fenêtre du jeu avec le nom "OnlyUP  " à l'aide de la fonction FindWindow.
-    HWND game_window = FindWindow(NULL, L"OnlyUP  ");
+    game_window = FindWindow(NULL, L"OnlyUP  ");
     // Vérifie si la fenêtre du jeu a été trouvée. Si ce n'est pas le cas, affiche un message d'erreur et termine le programme.
     if (!game_window) {
         // Affichage du message d'erreur dans une boîte de dialogue
@@ -153,6 +160,9 @@ int PositionManager::initPos(){
     yCoord = current_address;
     current_address -= 0x8;
     xCoord = current_address;
+    current_address -= 0x78;
+    rotationCoord = current_address;
+
 
     return 0;
 }
@@ -228,6 +238,8 @@ int PositionManager::initVelocity(){
     yVelocityCoord = current_address;
     current_address -= 0x8;
     xVelocityCoord = current_address;
+    current_address += 0xEC;
+    flyCoord = current_address;
 
     return 0;
 }
@@ -540,7 +552,15 @@ bool PositionManager::getFlyHack(){
 }
 
 void PositionManager::setFlyHack(bool isFlyHack){
+    const int walkMode = 131073;
+    const int flyMode = 5;
     flyHack = isFlyHack;
+    qDebug() << isFlyHack;
+    if(isFlyHack){
+        WriteProcessMemory(game_process, (void*)flyCoord, &flyMode, sizeof(flyMode), nullptr);
+    }else{
+        WriteProcessMemory(game_process, (void*)flyCoord, &walkMode, sizeof(walkMode), nullptr);
+    }
 }
 
 void PositionManager::updateVelocity(double x, double y, double z) {
@@ -548,29 +568,6 @@ void PositionManager::updateVelocity(double x, double y, double z) {
     WriteProcessMemory(game_process, (void*)xVelocityCoord, &x, sizeof(x), nullptr);
     WriteProcessMemory(game_process, (void*)yVelocityCoord, &y, sizeof(y), nullptr);
     WriteProcessMemory(game_process, (void*)zVelocityCoord, &z, sizeof(z), nullptr);
-}
-
-void PositionManager::stopMovement() {
-    updateVelocity(0, 0, 0);
-}
-
-void PositionManager::startFlyHack() {
-    flightThreadRunning = true;
-    flightThread = std::thread(&PositionManager::flightThreadFunction, this);
-}
-
-void PositionManager::stopFlyHack() {
-    flightThreadRunning = false;
-    if (flightThread.joinable()) {
-        flightThread.join();
-    }
-}
-
-void PositionManager::flightThreadFunction() {
-    while (flightThreadRunning) {
-        this->stopMovement();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
 }
 
 float PositionManager::getFps(){

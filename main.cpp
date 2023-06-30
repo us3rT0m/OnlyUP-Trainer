@@ -7,6 +7,24 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QDebug>
+#include <Windows.h>
+
+bool isUserAdmin()
+{
+    BOOL isAdmin = FALSE;
+    SID_IDENTIFIER_AUTHORITY ntAuthority = SECURITY_NT_AUTHORITY;
+    PSID adminGroup;
+    if (AllocateAndInitializeSid(&ntAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID,
+                                 DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &adminGroup))
+    {
+        if (!CheckTokenMembership(NULL, adminGroup, &isAdmin))
+        {
+            isAdmin = FALSE;
+        }
+        FreeSid(adminGroup);
+    }
+    return isAdmin == TRUE;
+}
 
 QTranslator translator;
 Config config("config.ini");
@@ -14,6 +32,12 @@ Config config("config.ini");
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    if (!isUserAdmin())
+    {
+        QMessageBox::critical(nullptr, QObject::tr("Erreur"), QObject::tr("This program requires administrator privileges."));
+        return -1;
+    }
 
     #if defined(QT_DEBUG)
         // Redirection de la sortie de débogage vers la console

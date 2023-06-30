@@ -75,6 +75,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    HWND game_window;
     void displayPositions(const QString& searchText);
     QScrollArea* scrollArea;
     QList<QLabel*> positionLabels; // Liste pour stocker les labels des positions

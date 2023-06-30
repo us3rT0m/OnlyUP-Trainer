@@ -14,6 +14,7 @@ public:
     PositionManager();
 
     int init();
+    HWND getGameWindow();
     void createPosition(const QString& name);
     void savePositionsToFile(const QString& filename);
     void track();
@@ -31,19 +32,19 @@ public:
     void speedDownDrake();
     void resetSpeedDrake();
     void updateVelocity(double x, double y, double z);
-    void stopMovement();
     void setFlyHack(bool isFlyHack);
     bool getFlyHack();
-    void startFlyHack();
-    void stopFlyHack();
     float getFps();
     void setFps(float newFps);
 
 private:
     HANDLE game_process;
+    HWND game_window;
     uintptr_t xCoord;
     uintptr_t yCoord;
     uintptr_t zCoord;
+    uintptr_t rotationCoord;
+    uintptr_t flyCoord;
     uintptr_t zVelocityCoord;
     uintptr_t yVelocityCoord;
     uintptr_t xVelocityCoord;
