@@ -31,8 +31,10 @@ public:
 
     static LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
 
+    int vkCodeINIT;
     int vkCodeTP;
     int vkCodeSAVE;
+    int vkCodeFPS;
 
 private slots:
     void on_pushButton_init_clicked();
@@ -55,15 +57,7 @@ private slots:
 
     void on_btn_pause_drake_clicked();
 
-    void on_btn_speed_drake_up_clicked();
-
-    void on_btn_speed_drake_down_clicked();
-
-    void on_btn_speed_drake_clicked();
-
     void on_languageSelector_currentIndexChanged(int index);
-
-    void on_flyRadioButton_toggled(bool checked);
 
     void on_fps_30_toggled(bool checked);
 
@@ -73,6 +67,14 @@ private slots:
 
     void on_fps_120_toggled(bool checked);
 
+    void on_pushButton_3_clicked();
+
+    void on_bigJumpCheckBox_clicked(bool checked);
+
+    void on_flyCheckBox_clicked(bool checked);
+
+    void on_keyTp_clicked();
+
 private:
     Ui::MainWindow *ui;
     HWND game_window;
@@ -81,6 +83,9 @@ private:
     QList<QLabel*> positionLabels; // Liste pour stocker les labels des positions
     QList<QPushButton*> deleteButtons; // Liste pour stocker les boutons de suppression
     HHOOK hHook;
-    void displayFps();
+    void firstDisplayFps();
+    void displayFps(float fps);
+    float accelerationFactor;
+    float maxAccelerationFactor;
 };
 #endif // MAINWINDOW_H

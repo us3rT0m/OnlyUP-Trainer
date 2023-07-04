@@ -33,12 +33,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    if (!isUserAdmin())
-    {
-        QMessageBox::critical(nullptr, QObject::tr("Erreur"), QObject::tr("This program requires administrator privileges."));
-        return -1;
-    }
-
     #if defined(QT_DEBUG)
         // Redirection de la sortie de débogage vers la console
         qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} %{type} %{threadid} %{function}(): %{message}");
@@ -49,10 +43,10 @@ int main(int argc, char *argv[])
     QLocale locale;
     if (lang == "en") {
         locale = QLocale(QLocale::English, QLocale::UnitedKingdom);
-    } else if (lang == "fr") {
-        locale = QLocale(QLocale::French, QLocale::France);
     } else if (lang == "zh") {
         locale = QLocale(QLocale::Chinese, QLocale::China);
+    } else if (lang == "ja") {
+        locale = QLocale(QLocale::Japanese, QLocale::Japan);
     }
 
     const QString baseName = "OnlyUP_Trainer_" + locale.name();
@@ -60,6 +54,12 @@ int main(int argc, char *argv[])
         a.installTranslator(&translator);
     } else {
         qDebug() << "Failed to load translation:" << baseName;
+    }
+
+    if (!isUserAdmin())
+    {
+        QMessageBox::critical(nullptr, QObject::tr("Erreur"), QObject::tr("This program requires administrator privileges."));
+        return -1;
     }
 
     MainWindow w;

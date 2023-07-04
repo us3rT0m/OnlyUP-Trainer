@@ -36,6 +36,7 @@ public:
     bool getFlyHack();
     float getFps();
     void setFps(float newFps);
+    void setJumpZVelocity(bool bigJump);
 
 private:
     HANDLE game_process;
@@ -44,7 +45,11 @@ private:
     uintptr_t yCoord;
     uintptr_t zCoord;
     uintptr_t rotationCoord;
-    uintptr_t flyCoord;
+    uintptr_t movementModeCoord;
+    uintptr_t maxFlySpeedCoord;
+    uintptr_t brakingDecelerationFlyingCoord;
+    uintptr_t airControlCoord;
+    uintptr_t jumpZVelocityCoord;
     uintptr_t zVelocityCoord;
     uintptr_t yVelocityCoord;
     uintptr_t xVelocityCoord;
@@ -61,6 +66,7 @@ private:
     float drakeMouvement;
     float fps;
     QMap<QString, QJsonObject> positions;
+    int findGameWindow();
     int initPos();
     int initVelocity();
     int initDrake();
@@ -68,9 +74,6 @@ private:
     uintptr_t base_address;
 
     bool flyHack;
-    std::thread flightThread;
-    std::atomic_bool flightThreadRunning;
-    void flightThreadFunction();
 
     uintptr_t GetModuleBaseAddress(DWORD procId, const wchar_t* modName);
     void loadPositionsFromFile(const QString& filename);

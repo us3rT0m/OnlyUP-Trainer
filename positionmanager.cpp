@@ -16,7 +16,11 @@ PositionManager::PositionManager() {
     yCoord = 0x000000;
     zCoord = 0x000000;
     rotationCoord = 0x000000;
-    flyCoord = 0x000000;
+    movementModeCoord = 0x000000;
+    maxFlySpeedCoord = 0x000000;
+    brakingDecelerationFlyingCoord = 0x000000;
+    jumpZVelocityCoord = 0x000000;
+    airControlCoord = 0x000000;
     xVelocityCoord = 0x000000;
     yVelocityCoord = 0x000000;
     zVelocityCoord = 0x000000;
@@ -37,17 +41,26 @@ PositionManager::PositionManager() {
     game_window = NULL;
 }
 
-HWND PositionManager::getGameWindow(){
-    return game_window;
-}
-
-int PositionManager::init() {
+int PositionManager::findGameWindow(){
     // Trouve la fenêtre du jeu avec le nom "OnlyUP  " à l'aide de la fonction FindWindow.
     game_window = FindWindow(NULL, L"OnlyUP  ");
     // Vérifie si la fenêtre du jeu a été trouvée. Si ce n'est pas le cas, affiche un message d'erreur et termine le programme.
     if (!game_window) {
         // Affichage du message d'erreur dans une boîte de dialogue
         QMessageBox::critical(nullptr, "Erreur", "Impossible de trouver la fenêtre du jeu.");
+            return 1;
+    }
+    return 0;
+}
+
+HWND PositionManager::getGameWindow(){
+    findGameWindow();
+    return game_window;
+}
+
+int PositionManager::init() {
+
+    if(findGameWindow()){
         return 1;
     }
 
@@ -83,6 +96,10 @@ int PositionManager::init() {
     if(!initPos()){
         if(!initVelocity()){
             if(!initFps()){
+                float maxFlySpeed = 6000.f;
+                WriteProcessMemory(game_process, (void*)maxFlySpeedCoord, &maxFlySpeed, sizeof(maxFlySpeed), nullptr);
+                float brakingDecelerationFlying = 6000.f;
+                WriteProcessMemory(game_process, (void*)brakingDecelerationFlyingCoord, &brakingDecelerationFlying, sizeof(brakingDecelerationFlying), nullptr);
                 return 0;
             }else{
                 return 1;
@@ -163,7 +180,6 @@ int PositionManager::initPos(){
     current_address -= 0x78;
     rotationCoord = current_address;
 
-
     return 0;
 }
 
@@ -238,8 +254,14 @@ int PositionManager::initVelocity(){
     yVelocityCoord = current_address;
     current_address -= 0x8;
     xVelocityCoord = current_address;
+    jumpZVelocityCoord = current_address + 0xC0;
     current_address += 0xEC;
-    flyCoord = current_address;
+    movementModeCoord = current_address;
+    current_address += 0x50;
+    maxFlySpeedCoord = current_address;
+    brakingDecelerationFlyingCoord = current_address + 0x28;
+    airControlCoord = current_address + 0x2C;
+
 
     return 0;
 }
@@ -552,14 +574,13 @@ bool PositionManager::getFlyHack(){
 }
 
 void PositionManager::setFlyHack(bool isFlyHack){
-    const int walkMode = 131073;
-    const int flyMode = 5;
+    const unsigned char walkMode = 1;
+    const unsigned char flyMode = 5;
     flyHack = isFlyHack;
-    qDebug() << isFlyHack;
     if(isFlyHack){
-        WriteProcessMemory(game_process, (void*)flyCoord, &flyMode, sizeof(flyMode), nullptr);
+        WriteProcessMemory(game_process, (void*)movementModeCoord, &flyMode, sizeof(flyMode), nullptr);
     }else{
-        WriteProcessMemory(game_process, (void*)flyCoord, &walkMode, sizeof(walkMode), nullptr);
+        WriteProcessMemory(game_process, (void*)movementModeCoord, &walkMode, sizeof(walkMode), nullptr);
     }
 }
 
@@ -578,5 +599,15 @@ float PositionManager::getFps(){
 void PositionManager::setFps(float newFps){
     fps = newFps;
     WriteProcessMemory(game_process, (void*)fpsCoord, &fps, sizeof(fps), nullptr);
+}
+
+void PositionManager::setJumpZVelocity(bool bigJump){
+    const float initial = 420;
+    const float augmented = 2000;
+    if(bigJump){
+        WriteProcessMemory(game_process, (void*)jumpZVelocityCoord, &augmented, sizeof(augmented), nullptr);
+    }else{
+        WriteProcessMemory(game_process, (void*)jumpZVelocityCoord, &initial, sizeof(initial), nullptr);
+    }
 }
 

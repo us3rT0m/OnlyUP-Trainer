@@ -2,6 +2,7 @@
     <qresource prefix="/i18n">
         <file>OnlyUP_Trainer_zh.qm</file>
         <file>OnlyUP_Trainer_en.qm</file>
+        <file>OnlyUP_Trainer_ja.qm</file>
     </qresource>
     <qresource prefix="/">
         <file>logo.png</file>

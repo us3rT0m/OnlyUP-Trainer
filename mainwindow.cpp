@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    game_window = positionManager.getGameWindow();
+
     QIcon windowIcon(":/logo.png"); // Chemin de l'image dans le fichier .qrc
     setWindowIcon(windowIcon);
 
@@ -58,11 +60,15 @@ MainWindow::MainWindow(QWidget *parent)
                         "QRadioButton {"
                         "color: white;"
                         "}"
+                        "QCheckBox {"
+                        "color: white;"
+                        "}"
                         );
 
     ui->languageSelector->blockSignals(true);
     ui->languageSelector->addItem("English", "en");
     ui->languageSelector->addItem("中文", "zh");
+    ui->languageSelector->addItem("日本語", "ja");
     ui->languageSelector->blockSignals(false);
 
     // Select current language
@@ -76,8 +82,13 @@ MainWindow::MainWindow(QWidget *parent)
     instance = this;
 //    vkCodeTP = 0;
 //    vkCodeSAVE = 0;
-    QString vkCodeSAVEString = config.get("vkCodeSAVE");
+    QString vkCodeINITString = config.get("vkCodeINIT");
     bool ok;
+    vkCodeINIT = vkCodeINITString.toInt(&ok);
+    if(!ok){
+        vkCodeINIT = 0;
+    }
+    QString vkCodeSAVEString = config.get("vkCodeSAVE");
     vkCodeSAVE = vkCodeSAVEString.toInt(&ok);
     if(!ok){
         vkCodeSAVE = 0;
@@ -87,6 +98,15 @@ MainWindow::MainWindow(QWidget *parent)
     if(!ok){
         vkCodeTP = 0;
     }
+    QString vkCodeFPSString = config.get("vkCodeFPS");
+    vkCodeFPS = vkCodeFPSString.toInt(&ok);
+    if(!ok){
+        vkCodeFPS = 0;
+    }
+
+    accelerationFactor = 1.0f;
+    maxAccelerationFactor = 10.0f;
+
     UnhookWindowsHookEx(hHook);
     hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(NULL), 0);
 }
@@ -245,8 +265,28 @@ void MainWindow::displayPositions(const QString& searchText = "")
     ui->verticalLayout_positions->addWidget(scrollArea);
 }
 
-void MainWindow::displayFps(){
+void MainWindow::firstDisplayFps(){
     float fps = positionManager.getFps();
+    if(fps == 30){
+        ui->fps_30->blockSignals(true);
+        ui->fps_30->setChecked(true);
+        ui->fps_30->blockSignals(false);
+    }else if(fps == 60){
+        ui->fps_60->blockSignals(true);
+        ui->fps_60->setChecked(true);
+        ui->fps_60->blockSignals(false);
+    }else if(fps == 90){
+        ui->fps_90->blockSignals(true);
+        ui->fps_90->setChecked(true);
+        ui->fps_90->blockSignals(false);
+    }else if(fps == 120){
+        ui->fps_120->blockSignals(true);
+        ui->fps_120->setChecked(true);
+        ui->fps_120->blockSignals(false);
+    }
+}
+
+void MainWindow::displayFps(float fps){
     if(fps == 30){
         ui->fps_30->blockSignals(true);
         ui->fps_30->setChecked(true);
@@ -269,10 +309,9 @@ void MainWindow::displayFps(){
 void MainWindow::on_pushButton_init_clicked()
 {
     if(!positionManager.init()){
-        this->game_window = positionManager.getGameWindow();
         positionManager.loadPos();
         displayPositions();
-        displayFps();
+        firstDisplayFps();
     }
 }
 
@@ -324,21 +363,74 @@ LRESULT CALLBACK MainWindow::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPAR
         }
 
         KBDLLHOOKSTRUCT *pKeyStruct = (KBDLLHOOKSTRUCT*)lParam;
-        float speed = 1000.0;
+        float baseSpeed = 600.0;
+        float speed = baseSpeed * MainWindow::instance->accelerationFactor; // Utilisez le facteur d'accélération ici
         switch (wParam) {
             case WM_KEYDOWN:
             case WM_SYSKEYDOWN: {
-                if (pKeyStruct->vkCode == MainWindow::instance->vkCodeTP) {
+                if (pKeyStruct->vkCode == MainWindow::instance->vkCodeINIT) {
+                    MainWindow::instance->ui->pushButton_init->click();
+                }else if (pKeyStruct->vkCode == MainWindow::instance->vkCodeTP) {
                     MainWindow::instance->positionManager.teleport();
                 }else if(pKeyStruct->vkCode == MainWindow::instance->vkCodeSAVE){
                     MainWindow::instance->positionManager.track();
                     MainWindow::instance->display_track();
-                } else if (MainWindow::instance->positionManager.getFlyHack()) {
+                }else if(pKeyStruct->vkCode == MainWindow::instance->vkCodeFPS){
+                    float fps = MainWindow::instance->positionManager.getFps();
+                    std::vector<float> liste = {30.f, 60.f, 90.f, 120.f};
+
+                    int suivant = liste[0];
+                    bool trouveSuperieur = false;
+
+                    for (int i = 0; i < liste.size(); i++) {
+                        if (liste[i] > fps) {
+                            suivant = liste[i];
+                            trouveSuperieur = true;
+                            break;
+                        }
+                    }
+
+                    if (!trouveSuperieur) {
+                        suivant = liste[0];
+                    }
+
+                    switch(suivant){
+                        case 30:
+                            MainWindow::instance->ui->fps_30->setChecked(true);
+                            break;
+                        case 60:
+                            MainWindow::instance->ui->fps_60->setChecked(true);
+                            break;
+                        case 90:
+                            MainWindow::instance->ui->fps_90->setChecked(true);
+                            break;
+                        case 120:
+                            MainWindow::instance->ui->fps_120->setChecked(true);
+                            break;
+                    }
+                }else if (MainWindow::instance->positionManager.getFlyHack()) {
                     qDebug() << pKeyStruct->vkCode;
                     if (pKeyStruct->vkCode == 81) {
                         MainWindow::instance->positionManager.updateVelocity(0, 0, -speed);
+                        if (MainWindow::instance->accelerationFactor < MainWindow::instance->maxAccelerationFactor) {
+                            MainWindow::instance->accelerationFactor += 0.1f; // Augmentez le facteur d'accélération à chaque pression de touche
+                        }
                     } else if (pKeyStruct->vkCode == 69) {
                         MainWindow::instance->positionManager.updateVelocity(0, 0, speed);
+                        if (MainWindow::instance->accelerationFactor < MainWindow::instance->maxAccelerationFactor) {
+                            MainWindow::instance->accelerationFactor += 0.1f; // Augmentez le facteur d'accélération à chaque pression de touche
+                        }
+                    }
+                }
+                break;
+            }
+            case WM_KEYUP:
+            case WM_SYSKEYUP:{
+                if (MainWindow::instance->positionManager.getFlyHack()) {
+                    if (pKeyStruct->vkCode == 81) {
+                        MainWindow::instance->accelerationFactor = 1.f;
+                    } else if (pKeyStruct->vkCode == 69) {
+                        MainWindow::instance->accelerationFactor = 1.f;
                     }
                 }
                 break;
@@ -400,30 +492,13 @@ void MainWindow::on_pushButton_2_clicked()
 void MainWindow::on_btn_reset_drake_clicked()
 {
     positionManager.resetDrake();
+    this->ui->btn_reset_drake->setChecked(false);
 }
-
 
 void MainWindow::on_btn_pause_drake_clicked()
 {
     positionManager.pauseDrake();
 }
-
-void MainWindow::on_btn_speed_drake_up_clicked()
-{
-    positionManager.speedUpDrake();
-}
-
-void MainWindow::on_btn_speed_drake_down_clicked()
-{
-    positionManager.speedDownDrake();
-}
-
-
-void MainWindow::on_btn_speed_drake_clicked()
-{
-    positionManager.resetSpeedDrake();
-}
-
 
 void MainWindow::on_languageSelector_currentIndexChanged(int index)
 {
@@ -441,18 +516,21 @@ void MainWindow::on_languageSelector_currentIndexChanged(int index)
         locale = QLocale(QLocale::French, QLocale::France);
     } else if (newLang == "zh") {
         locale = QLocale(QLocale::Chinese, QLocale::China);
+    } else if (newLang == "ja") {
+        locale = QLocale(QLocale::Japanese, QLocale::Japan);
     }
 
     const QString baseName = "OnlyUP_Trainer_" + locale.name();
     if (translator.load(":/i18n/" + baseName)) {
         qApp->installTranslator(&translator);
         ui->retranslateUi(this);  // retranslate the user interface
+        qDebug() << "Loaded translation:" << baseName;
     } else {
         qDebug() << "Failed to load translation:" << baseName;
     }
 }
 
-void MainWindow::on_flyRadioButton_toggled(bool checked)
+void MainWindow::on_flyCheckBox_clicked(bool checked)
 {
     positionManager.setFlyHack(checked);
 }
@@ -479,3 +557,40 @@ void MainWindow::on_fps_120_toggled(bool checked)
 {
     positionManager.setFps(120.f);
 }
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Choisir une touche"),
+                                         tr("Touche :"), QLineEdit::Normal,
+                                         "", &ok);
+    if (ok && !text.isEmpty()) {
+        // Convertir le texte entré en une touche virtuelle
+        vkCodeFPS = VkKeyScanEx(text[0].toLatin1(), GetKeyboardLayout(0)) & 0xFF;
+        config.set("vkCodeFPS", QString::number(vkCodeFPS));
+        config.save("config.ini");
+    }
+}
+
+void MainWindow::on_bigJumpCheckBox_clicked(bool checked)
+{
+    positionManager.setJumpZVelocity(checked);
+}
+
+
+
+
+void MainWindow::on_keyTp_clicked()
+{
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Choisir une touche"),
+                                         tr("Touche :"), QLineEdit::Normal,
+                                         "", &ok);
+    if (ok && !text.isEmpty()) {
+        // Convertir le texte entré en une touche virtuelle
+        vkCodeINIT = VkKeyScanEx(text[0].toLatin1(), GetKeyboardLayout(0)) & 0xFF;
+        config.set("vkCodeINIT", QString::number(vkCodeINIT));
+        config.save("config.ini");
+    }
+}
+
