@@ -17,7 +17,14 @@ This project is for speedrunners. The principle is simple. You can create checkp
 - Teleport to checkpoints
 - Create a key for fast teleportation
 - Reset dragon position
-- Changing the speed of the dragon
+- freeze dragon position
+- Fun mode : big jump
+- Can fly
+- Change fps
+- English translation
+- Chinese translation
+- Japanese translation
+
 
 
 ## How to use
@@ -34,6 +41,7 @@ This project is for speedrunners. The principle is simple. You can create checkp
 ## Contribution
 
 Contributions are always welcome!
+Contact us before working on a feature to ask if we are not already on it
 
 
 ## License

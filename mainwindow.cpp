@@ -73,7 +73,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Select current language
     QString currentLang = config.get("lang");
-//    qDebug() << "Current lang: " << currentLang;
     int index = ui->languageSelector->findData(currentLang);
     if (index != -1) {
         ui->languageSelector->setCurrentIndex(index);
@@ -309,6 +308,7 @@ void MainWindow::displayFps(float fps){
 void MainWindow::on_pushButton_init_clicked()
 {
     if(!positionManager.init()){
+        game_window = positionManager.getGameWindow();
         positionManager.loadPos();
         displayPositions();
         firstDisplayFps();
@@ -409,7 +409,6 @@ LRESULT CALLBACK MainWindow::LowLevelKeyboardProc(int nCode, WPARAM wParam, LPAR
                             break;
                     }
                 }else if (MainWindow::instance->positionManager.getFlyHack()) {
-                    qDebug() << pKeyStruct->vkCode;
                     if (pKeyStruct->vkCode == 81) {
                         MainWindow::instance->positionManager.updateVelocity(0, 0, -speed);
                         if (MainWindow::instance->accelerationFactor < MainWindow::instance->maxAccelerationFactor) {

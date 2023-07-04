@@ -46,9 +46,7 @@ int PositionManager::findGameWindow(){
     game_window = FindWindow(NULL, L"OnlyUP  ");
     // Vérifie si la fenêtre du jeu a été trouvée. Si ce n'est pas le cas, affiche un message d'erreur et termine le programme.
     if (!game_window) {
-        // Affichage du message d'erreur dans une boîte de dialogue
-        QMessageBox::critical(nullptr, "Erreur", "Impossible de trouver la fenêtre du jeu.");
-            return 1;
+        return 1;
     }
     return 0;
 }
@@ -61,6 +59,8 @@ HWND PositionManager::getGameWindow(){
 int PositionManager::init() {
 
     if(findGameWindow()){
+        // Affichage du message d'erreur dans une boîte de dialogue
+        QMessageBox::critical(nullptr, "Erreur", "Impossible de trouver la fenêtre du jeu.");
         return 1;
     }
 
