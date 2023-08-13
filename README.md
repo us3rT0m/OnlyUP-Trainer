@@ -1,4 +1,8 @@
-# OnlyUP Trainer
+##### ⚠️ **I am no longer responsible for the development or maintenance of this project.** ⚠️
+
+##### New official project is on [@Edgarflc](https://github.com/Edgarflc/OnlyUP-Trainer) repository
+
+# OnlyUP Trainer [DISCONTINUED]
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE.md) [![Github All Releases](https://img.shields.io/github/downloads/us3rT0m/OnlyUP-Trainer/total.svg)]()
 
