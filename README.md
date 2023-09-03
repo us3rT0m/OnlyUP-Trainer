@@ -1,3 +1,5 @@
+# THE TRAINER IS NOT COMPATIBLE WITH ONLY UP CRACKED VERSIONS (it's not compatible with the first version of the game, and most cracks happens to be the first version of the game)
+
 ##### ⚠️ **I am no longer responsible for the development or maintenance of this project.** ⚠️
 
 ##### New official project is on [@Edgarflc](https://github.com/Edgarflc/OnlyUP-Trainer) repository
